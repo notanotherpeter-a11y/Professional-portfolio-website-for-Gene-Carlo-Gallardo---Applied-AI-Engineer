@@ -1,0 +1,555 @@
+// Smooth scrolling and navigation
+document.addEventListener('DOMContentLoaded', function() {
+    // Navigation elements
+    const nav = document.getElementById('nav');
+    const navToggle = document.getElementById('nav-toggle');
+    const navMenu = document.getElementById('nav-menu');
+    const navLinks = document.querySelectorAll('.nav-link');
+    
+    // Mobile navigation toggle
+    navToggle.addEventListener('click', function() {
+        navToggle.classList.toggle('active');
+        navMenu.classList.toggle('active');
+        document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
+    });
+
+    // Close mobile menu when clicking on a link
+    navLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            navToggle.classList.remove('active');
+            navMenu.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+    });
+
+    // Navbar scroll effect
+    window.addEventListener('scroll', function() {
+        if (window.scrollY > 100) {
+            nav.style.background = 'rgba(13, 17, 23, 0.95)';
+        } else {
+            nav.style.background = 'rgba(13, 17, 23, 0.8)';
+        }
+    });
+
+    // Active navigation link based on scroll position
+    const sections = document.querySelectorAll('section[id]');
+    
+    function highlightNavLink() {
+        const scrollPos = window.scrollY + 100;
+        
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            const sectionHeight = section.offsetHeight;
+            const sectionId = section.getAttribute('id');
+            const correspondingLink = document.querySelector(`a[href="#${sectionId}"]`);
+            
+            if (scrollPos >= sectionTop && scrollPos < sectionTop + sectionHeight) {
+                navLinks.forEach(link => link.classList.remove('active'));
+                if (correspondingLink) {
+                    correspondingLink.classList.add('active');
+                }
+            }
+        });
+    }
+    
+    window.addEventListener('scroll', highlightNavLink);
+
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                const offsetTop = target.offsetTop - 80; // Account for fixed nav
+                window.scrollTo({
+                    top: offsetTop,
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+
+    // Intersection Observer for animations
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+
+    // Observe elements for animation
+    const animatedElements = document.querySelectorAll('.fact-card, .skill-group, .project-card, .timeline-item, .education-card');
+    animatedElements.forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(30px)';
+        el.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
+        observer.observe(el);
+    });
+
+    // Staggered animation for skill pills
+    const skillGroups = document.querySelectorAll('.skill-group');
+    skillGroups.forEach(group => {
+        const pills = group.querySelectorAll('.skill-pill');
+        pills.forEach((pill, index) => {
+            pill.style.opacity = '0';
+            pill.style.transform = 'translateY(20px)';
+            pill.style.transition = `opacity 0.4s ease-out ${index * 0.1}s, transform 0.4s ease-out ${index * 0.1}s`;
+        });
+
+        const groupObserver = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    pills.forEach(pill => {
+                        pill.style.opacity = '1';
+                        pill.style.transform = 'translateY(0)';
+                    });
+                    groupObserver.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        groupObserver.observe(group);
+    });
+});
+
+// Project modal functionality
+const projectData = {
+    project1: {
+        title: "3000 Auto Spa: On-Demand Service Marketplace",
+        status: "Built",
+        statusClass: "status-built",
+        description: "A comprehensive dual-sided mobile marketplace platform for on-demand mobile car detailing services.",
+        
+        problem: "The Australian mobile detailing market lacked a seamless, professional booking experience. Customers struggled to find reliable services, while service providers had limited tools for managing bookings and routing efficiently.",
+        
+        solution: "Built a complete ecosystem consisting of customer mobile app, service provider app, and centralised admin dashboard. The platform handles everything from initial booking to payment processing and service completion.",
+        
+        features: [
+            "Customer mobile app with real-time booking",
+            "Service provider app with job management",
+            "Admin dashboard with analytics and oversight",
+            "Intelligent job routing and assignment",
+            "Real-time push notifications",
+            "Integrated payment processing",
+            "Performance analytics and reporting",
+            "Multi-service offering management"
+        ],
+        
+        tech: "React Native for mobile apps, Node.js backend, MongoDB database, real-time notifications, geolocation services, payment gateway integration",
+        
+        outcome: "Platform built and pending App Store submission. Ready for deployment across Melbourne market with expansion plans for national rollout.",
+        
+        learnings: [
+            "Mobile-first design critical for on-demand services",
+            "Real-time communication essential for service coordination",
+            "Admin oversight tools crucial for marketplace quality control"
+        ]
+    },
+    
+    project2: {
+        title: "Autonomous AI Customer Service Agent",
+        status: "Deployed",
+        statusClass: "status-deployed",
+        description: "An intelligent conversational AI system that autonomously handles customer enquiries and books appointments.",
+        
+        problem: "Small businesses were losing potential customers due to delayed responses to enquiries, while staff time was consumed by repetitive communication tasks. After-hours enquiries often went unanswered.",
+        
+        solution: "Developed an AI agent that understands business context, handles common enquiries, books appointments, and escalates complex issues to humans when appropriate. The system operates 24/7 and maintains conversation context across multiple touchpoints.",
+        
+        features: [
+            "Context-aware dialogue management",
+            "Intelligent appointment scheduling",
+            "Human escalation logic",
+            "Multi-business deployment capability",
+            "Configurable business personas",
+            "Follow-up communication automation",
+            "Integration with existing booking systems",
+            "Performance analytics and conversation logs"
+        ],
+        
+        tech: "LLM APIs (OpenAI, Claude), custom conversation flow engine, webhook integrations, calendar API connections, database for context storage",
+        
+        outcome: "Successfully deployed across multiple client businesses. Handling 80%+ of routine enquiries autonomously, with 24-hour average response time improvement.",
+        
+        learnings: [
+            "Context persistence crucial for natural conversations",
+            "Clear escalation triggers prevent customer frustration",
+            "Business-specific training data significantly improves accuracy"
+        ]
+    },
+    
+    project3: {
+        title: "Tax and Invoice Management System",
+        status: "Deployed",
+        statusClass: "status-deployed",
+        description: "An intelligent financial platform that automates invoicing, GST tracking, and compliance reporting for small businesses.",
+        
+        problem: "Small business owners spent excessive time on manual bookkeeping tasks, often making errors in GST calculations and missing important financial reporting deadlines.",
+        
+        solution: "Built an automated system that generates invoices, tracks GST obligations, parses financial documents, and produces compliance-ready reports. The platform reduces manual data entry by 90% while improving accuracy.",
+        
+        features: [
+            "Automated invoice generation and tracking",
+            "GST calculation and compliance reporting",
+            "Document parsing and data extraction",
+            "Expense categorization and tracking",
+            "Financial dashboard with key metrics",
+            "Integration with accounting software",
+            "Automated backup and data security",
+            "Multi-business entity support"
+        ],
+        
+        tech: "Python for document processing, machine learning for data extraction, React frontend, PostgreSQL database, PDF generation libraries, accounting software APIs",
+        
+        outcome: "Deployed and actively used by multiple small businesses. Users report 75% time savings on bookkeeping tasks and 100% accuracy improvement in GST reporting.",
+        
+        learnings: [
+            "Document parsing accuracy critical for financial applications",
+            "User-friendly interfaces essential for non-technical business owners",
+            "Automated compliance features provide significant value"
+        ]
+    },
+    
+    project4: {
+        title: "Lead Generation and Directory Engine",
+        status: "Deployed",
+        statusClass: "status-deployed", 
+        description: "An automated pipeline that harvests and enriches business contact information from public directories at scale.",
+        
+        problem: "Sales teams spent hours manually researching prospects and building contact lists, often with incomplete or outdated information. The process was time-consuming and inconsistent.",
+        
+        solution: "Created an intelligent scraping engine that automatically discovers, extracts, and enriches business contact data from multiple public sources. The system deduplicates information and outputs CRM-ready contact lists.",
+        
+        features: [
+            "Multi-source data extraction",
+            "Intelligent deduplication algorithms", 
+            "Contact information enrichment",
+            "Geographic and industry filtering",
+            "CRM-compatible export formats",
+            "Data quality scoring and validation",
+            "Automated update cycles",
+            "Compliance with data protection regulations"
+        ],
+        
+        tech: "Python web scraping frameworks, data processing pipelines, machine learning for deduplication, API integrations, database optimization, cloud deployment",
+        
+        outcome: "Processing thousands of business records weekly. Sales teams report 10x improvement in lead research efficiency and 40% increase in contact accuracy.",
+        
+        learnings: [
+            "Data quality is more valuable than data quantity",
+            "Automated enrichment significantly improves conversion rates",
+            "Compliance considerations must be built-in from the start"
+        ]
+    },
+    
+    project5: {
+        title: "Syntyx Labs: AI SaaS Product Studio",
+        status: "Active",
+        statusClass: "status-active",
+        description: "Gene's software development studio specializing in AI-powered business tools and automation platforms.",
+        
+        problem: "Small and medium businesses needed enterprise-grade AI capabilities but lacked the budget and technical expertise to build custom solutions.",
+        
+        solution: "Established a product studio that builds, tests, and delivers AI-powered tools specifically designed for SMB operations. Focus on practical business value rather than technical complexity.",
+        
+        features: [
+            "AI receptionist and customer service tools",
+            "Business intelligence and analytics platforms", 
+            "Process automation and workflow tools",
+            "Custom AI agent development",
+            "Integration with existing business systems",
+            "Ongoing support and optimization",
+            "Scalable SaaS deployment models",
+            "Industry-specific solution customization"
+        ],
+        
+        tech: "Full-stack development across multiple technologies, AI/ML model integration, cloud infrastructure, SaaS architecture, API development, database design",
+        
+        outcome: "Active client base with deployed solutions. Proven track record of delivering practical AI tools that generate measurable business value.",
+        
+        learnings: [
+            "SMB clients value simplicity and reliability over advanced features",
+            "Industry-specific customization drives adoption",
+            "Ongoing support relationships are crucial for success"
+        ]
+    }
+};
+
+// Open project modal
+function openProject(projectId) {
+    const modal = document.getElementById('projectModal');
+    const modalBody = document.getElementById('modalBody');
+    const project = projectData[projectId];
+    
+    if (!project) return;
+    
+    modalBody.innerHTML = `
+        <div class="project-detail">
+            <div class="project-detail-header">
+                <div class="project-detail-title-section">
+                    <h2 class="project-detail-title">${project.title}</h2>
+                    <span class="status-badge ${project.statusClass}">${project.status}</span>
+                </div>
+                <p class="project-detail-description">${project.description}</p>
+            </div>
+            
+            <div class="project-detail-content">
+                <section class="project-detail-section">
+                    <h3>The Problem</h3>
+                    <p>${project.problem}</p>
+                </section>
+                
+                <section class="project-detail-section">
+                    <h3>What Was Built</h3>
+                    <p>${project.solution}</p>
+                    <div class="project-features">
+                        <h4>Key Features:</h4>
+                        <ul>
+                            ${project.features.map(feature => `<li>${feature}</li>`).join('')}
+                        </ul>
+                    </div>
+                </section>
+                
+                <section class="project-detail-section">
+                    <h3>How It Was Built</h3>
+                    <p><strong>Technical Approach:</strong> ${project.tech}</p>
+                </section>
+                
+                <section class="project-detail-section">
+                    <h3>Outcome</h3>
+                    <p>${project.outcome}</p>
+                </section>
+                
+                ${project.learnings ? `
+                <section class="project-detail-section">
+                    <h3>Key Learnings</h3>
+                    <ul>
+                        ${project.learnings.map(learning => `<li>${learning}</li>`).join('')}
+                    </ul>
+                </section>
+                ` : ''}
+            </div>
+            
+            <div class="project-detail-footer">
+                <button class="btn btn-primary" onclick="closeProject()">← Back to Projects</button>
+            </div>
+        </div>
+    `;
+    
+    modal.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+    
+    // Add styles for project detail modal
+    if (!document.getElementById('modalStyles')) {
+        const style = document.createElement('style');
+        style.id = 'modalStyles';
+        style.textContent = `
+            .project-detail {
+                padding: 2rem;
+                max-width: 100%;
+            }
+            
+            .project-detail-header {
+                margin-bottom: 2rem;
+                padding-bottom: 2rem;
+                border-bottom: 1px solid var(--border);
+            }
+            
+            .project-detail-title-section {
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+                margin-bottom: 1rem;
+                flex-wrap: wrap;
+            }
+            
+            .project-detail-title {
+                color: var(--text-primary);
+                font-size: 2rem;
+                font-weight: 600;
+                line-height: 1.3;
+                margin: 0;
+                flex: 1;
+                min-width: 300px;
+            }
+            
+            .project-detail-description {
+                color: var(--text-secondary);
+                font-size: 1.125rem;
+                line-height: 1.6;
+                margin: 0;
+            }
+            
+            .project-detail-content {
+                margin-bottom: 2rem;
+            }
+            
+            .project-detail-section {
+                margin-bottom: 2rem;
+            }
+            
+            .project-detail-section h3 {
+                color: var(--text-primary);
+                font-size: 1.5rem;
+                font-weight: 600;
+                margin-bottom: 1rem;
+            }
+            
+            .project-detail-section h4 {
+                color: var(--text-primary);
+                font-size: 1.125rem;
+                font-weight: 600;
+                margin-bottom: 0.5rem;
+                margin-top: 1rem;
+            }
+            
+            .project-detail-section p {
+                color: var(--text-secondary);
+                line-height: 1.6;
+                margin-bottom: 1rem;
+            }
+            
+            .project-detail-section ul {
+                color: var(--text-secondary);
+                line-height: 1.6;
+            }
+            
+            .project-detail-section li {
+                margin-bottom: 0.5rem;
+                padding-left: 0.5rem;
+            }
+            
+            .project-features {
+                margin-top: 1rem;
+                padding: 1.5rem;
+                background: var(--bg-secondary);
+                border-radius: 8px;
+                border: 1px solid var(--border);
+            }
+            
+            .project-detail-footer {
+                padding-top: 2rem;
+                border-top: 1px solid var(--border);
+                text-align: center;
+            }
+            
+            @media (max-width: 767px) {
+                .project-detail {
+                    padding: 1rem;
+                }
+                
+                .project-detail-title {
+                    font-size: 1.5rem;
+                    min-width: auto;
+                }
+                
+                .project-detail-title-section {
+                    flex-direction: column;
+                    align-items: flex-start;
+                    gap: 0.5rem;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+}
+
+// Close project modal
+function closeProject() {
+    const modal = document.getElementById('projectModal');
+    modal.style.display = 'none';
+    document.body.style.overflow = '';
+}
+
+// Modal close events
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('projectModal');
+    const closeBtn = document.querySelector('.modal-close');
+    
+    // Close modal when clicking the X
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closeProject);
+    }
+    
+    // Close modal when clicking outside
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            closeProject();
+        }
+    });
+    
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modal.style.display === 'block') {
+            closeProject();
+        }
+    });
+});
+
+// Contact form handling
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('.contact-form');
+    
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            // Form will be handled by Formspree
+            // Add any client-side validation or UI feedback here
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            
+            submitBtn.textContent = 'Sending...';
+            submitBtn.disabled = true;
+            
+            // Re-enable button after a delay (Formspree will handle the actual submission)
+            setTimeout(() => {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }, 3000);
+        });
+    }
+});
+
+// Utility function for smooth reveal animations
+function revealOnScroll() {
+    const reveals = document.querySelectorAll('.reveal');
+    
+    reveals.forEach(element => {
+        const windowHeight = window.innerHeight;
+        const elementTop = element.getBoundingClientRect().top;
+        const elementVisible = 150;
+        
+        if (elementTop < windowHeight - elementVisible) {
+            element.classList.add('active');
+        }
+    });
+}
+
+window.addEventListener('scroll', revealOnScroll);
+
+// Performance optimization: throttle scroll events
+function throttle(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// Apply throttling to scroll events
+const throttledScrollHandler = throttle(() => {
+    highlightNavLink();
+    revealOnScroll();
+}, 16); // ~60fps
+
+window.addEventListener('scroll', throttledScrollHandler);

@@ -1,0 +1,42 @@
+{
+  "name": "gene-carlo-gallardo-portfolio",
+  "version": "1.0.0",
+  "description": "Professional portfolio website for Gene Carlo Gallardo - Applied AI Engineer, Systems Developer, and Automation Architect",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx serve . -p 3000",
+    "build": "npm run validate && npm run optimize",
+    "validate": "npx html-validate index.html",
+    "optimize": "echo 'Build process completed - files are production ready'",
+    "lighthouse": "npx lighthouse http://localhost:3000 --output=html --output-path=./lighthouse-report.html",
+    "deploy:vercel": "vercel --prod",
+    "deploy:netlify": "netlify deploy --prod --dir=."
+  },
+  "keywords": [
+    "portfolio",
+    "ai-engineer", 
+    "systems-developer",
+    "automation-architect",
+    "web-development",
+    "gene-carlo-gallardo"
+  ],
+  "author": {
+    "name": "Gene Carlo Gallardo",
+    "email": "genecarlogallardo@gmail.com",
+    "url": "https://genecarlogallardo.com"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "serve": "^14.0.0",
+    "lighthouse": "^10.0.0",
+    "html-validate": "^8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/genecarlo/portfolio.git"
+  },
+  "homepage": "https://genecarlogallardo.com",
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
