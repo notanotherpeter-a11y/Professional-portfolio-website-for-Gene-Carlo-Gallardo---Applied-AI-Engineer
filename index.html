@@ -24,6 +24,9 @@
     
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
+
+    <!-- Three.js for 3D scenes -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js" defer></script>
     
     <!-- Structured Data -->
     <script type="application/ld+json">
@@ -76,6 +79,7 @@
             <div class="hero-orb hero-orb-2"></div>
             <div class="hero-orb hero-orb-3"></div>
         </div>
+        <canvas id="hero-3d-canvas" class="hero-3d-canvas" aria-hidden="true"></canvas>
         <div class="container">
             <div class="hero-content">
                 <h1 class="hero-name">Gene Carlo Gallardo</h1>
@@ -190,6 +194,25 @@
                         <span class="skill-pill">AI Governance</span>
                     </div>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3D Showcase Section -->
+    <section class="showcase3d" id="showcase3d" aria-label="Interactive 3D showcase">
+        <div class="container">
+            <h2 class="section-heading">Interactive Showcase</h2>
+            <p class="showcase3d-intro">A live, interactive representation of how autonomous AI agents connect data, decisions, and business outcomes — rendered in real time with WebGL.</p>
+            <div class="showcase3d-stage">
+                <canvas id="showcase-3d-canvas" class="showcase-3d-canvas" aria-hidden="true"></canvas>
+                <div class="showcase3d-overlay">
+                    <div class="showcase3d-badge"><span class="dot"></span> Rendering live · WebGL</div>
+                </div>
+            </div>
+            <div class="showcase3d-captions">
+                <div class="showcase3d-caption"><strong>Nodes</strong><span>Autonomous agents</span></div>
+                <div class="showcase3d-caption"><strong>Edges</strong><span>Context & tool calls</span></div>
+                <div class="showcase3d-caption"><strong>Core</strong><span>Orchestration layer</span></div>
             </div>
         </div>
     </section>
@@ -487,5 +510,8 @@
     </div>
 
     <script src="script.js"></script>
+    <!-- Three.js (3D hero background + tilt effects) -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+    <script src="three-scene.js" defer></script>
 </body>
 </html>
