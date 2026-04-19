@@ -758,3 +758,49 @@ window.addEventListener('scroll', throttledScrollHandler);
     tick();
     setInterval(tick, 30000);
 })();
+
+// Projects — cursor-follow hover reveal
+(function () {
+    const preview = document.getElementById('reveal-preview');
+    const wrap = document.getElementById('projects-reveal');
+    if (!preview || !wrap) return;
+    if (window.matchMedia('(hover: none)').matches) return;
+
+    const numEl = preview.querySelector('.reveal-preview-num');
+    const titleEl = preview.querySelector('.reveal-preview-title');
+    const cards = wrap.querySelectorAll('.project-card');
+
+    let targetX = 0, targetY = 0, curX = 0, curY = 0, active = false, rafId = null;
+
+    const loop = () => {
+        curX += (targetX - curX) * 0.18;
+        curY += (targetY - curY) * 0.18;
+        preview.style.transform = `translate3d(${curX}px, ${curY}px, 0) scale(${active ? 1 : 0.9})`;
+        rafId = requestAnimationFrame(loop);
+    };
+
+    const onMove = (e) => {
+        targetX = e.clientX + 24;
+        targetY = e.clientY + 24;
+        if (!rafId) rafId = requestAnimationFrame(loop);
+    };
+
+    cards.forEach((card) => {
+        card.addEventListener('mouseenter', () => {
+            active = true;
+            const num = card.dataset.revealNum || '00';
+            const title = card.dataset.revealTitle || 'Project';
+            const hue = card.dataset.revealHue || '210';
+            numEl.textContent = `[ ${num} ]`;
+            titleEl.textContent = title;
+            preview.style.setProperty('--reveal-hue', hue);
+            preview.classList.add('is-active');
+        });
+        card.addEventListener('mouseleave', () => {
+            active = false;
+            preview.classList.remove('is-active');
+        });
+    });
+
+    document.addEventListener('mousemove', onMove, { passive: true });
+})();
