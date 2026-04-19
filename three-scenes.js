@@ -173,25 +173,19 @@
         const points = new THREE.Points(pGeom, pMat);
         scene.add(points);
 
-        // 3D Monogram "GC" — extruded text via shapes (pushed back behind portrait)
+        // 3D Monogram "GC" — extruded text, positioned as signature accent.
+        // Offset to the opposite side of the HTML portrait (right-lower on
+        // desktop, upper-center on mobile) so they don't overlap.
         const monogram = buildMonogram();
-        monogram.position.set(14, 6, -12);
-        monogram.scale.setScalar(2.6);
-        scene.add(monogram);
-
-        // 3D Portrait — textured plane floating in the scene.
-        // Responsive: on narrow (mobile) viewports, push it lower and smaller
-        // so it doesn't sit directly behind the headline text.
-        const portrait = buildPortraitCard('assets/gene-portrait.jpg');
         const isNarrow = window.innerWidth < 768;
         if (isNarrow) {
-            portrait.position.set(0, -14, 12);
-            portrait.scale.setScalar(0.85);
+            monogram.position.set(0, 14, -10);
+            monogram.scale.setScalar(2.2);
         } else {
-            portrait.position.set(-18, -2, 12);
-            portrait.scale.setScalar(1.1);
+            monogram.position.set(18, -3, -10);
+            monogram.scale.setScalar(3.2);
         }
-        scene.add(portrait);
+        scene.add(monogram);
 
         // Lighting — brighter overall + dedicated portrait key light
         scene.add(new THREE.AmbientLight(0xffffff, 0.85));
@@ -278,17 +272,8 @@
                 points.rotation.y = t * 0.03;
                 monogram.rotation.y = Math.sin(t * 0.4) * 0.5;
                 monogram.rotation.x = Math.sin(t * 0.3) * 0.15;
-                monogram.position.y = 6 + Math.sin(t * 0.8) * 0.4;
-
-                // Portrait: subtle float + mouse-driven tilt (parallax toward cursor)
-                const tiltX = (mouseScreen.y - 0.5) * 0.35;
-                const tiltY = (mouseScreen.x - 0.5) * -0.45;
-                portrait.rotation.x += (tiltX - portrait.rotation.x) * 0.06;
-                portrait.rotation.y += (tiltY - portrait.rotation.y) * 0.06;
-                const baseY = isNarrow ? -14 : -2;
-                const baseX = isNarrow ? 0 : -18;
-                portrait.position.y = baseY + Math.sin(t * 0.6) * 0.5;
-                portrait.position.x = baseX + Math.sin(t * 0.4) * 0.25;
+                const baseMonoY = isNarrow ? 14 : -3;
+                monogram.position.y = baseMonoY + Math.sin(t * 0.8) * 0.4;
             }
 
             // Camera parallax toward mouse

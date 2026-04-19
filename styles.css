@@ -1089,9 +1089,94 @@ section {
 
 .hero .container,
 .hero .hero-content,
+.hero-grid,
+.hero-portrait,
 .hero-scroll-indicator {
     position: relative;
     z-index: 2;
+}
+
+/* Hero 2-column grid: text | portrait. Stacks on mobile. */
+.hero-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+    align-items: center;
+    justify-items: center;
+}
+@media (min-width: 900px) {
+    .hero-grid {
+        grid-template-columns: 1.4fr 1fr;
+        gap: 3.5rem;
+        justify-items: start;
+    }
+    .hero-content { text-align: left; }
+    .hero-ctas { justify-content: flex-start; }
+}
+
+/* Portrait card — feathered, glowing, subtly tilted */
+.hero-portrait {
+    position: relative;
+    width: min(78vw, 340px);
+    aspect-ratio: 3 / 4;
+    border-radius: 22px;
+    overflow: visible;
+    transform: perspective(1100px) rotateY(-7deg) rotateX(3deg);
+    transition: transform 0.6s ease;
+    order: 2; /* below text on mobile */
+    margin-top: 0.5rem;
+}
+@media (min-width: 900px) {
+    .hero-portrait {
+        width: min(28vw, 420px);
+        transform: perspective(1100px) rotateY(-9deg) rotateX(4deg) translateZ(0);
+    }
+}
+.hero-portrait:hover {
+    transform: perspective(1100px) rotateY(-4deg) rotateX(2deg) scale(1.02);
+}
+
+.hero-portrait-img {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 22px;
+    display: block;
+    /* Feathered edges: fade to transparent near the border so the photo
+     * blends into the hero background instead of sitting as a hard card. */
+    -webkit-mask-image: radial-gradient(ellipse 82% 86% at 50% 48%,
+        #000 55%, rgba(0,0,0,0.85) 72%, rgba(0,0,0,0.35) 88%, transparent 100%);
+            mask-image: radial-gradient(ellipse 82% 86% at 50% 48%,
+        #000 55%, rgba(0,0,0,0.85) 72%, rgba(0,0,0,0.35) 88%, transparent 100%);
+    box-shadow:
+        0 30px 80px rgba(0, 0, 0, 0.45),
+        0 0 0 1px rgba(47, 129, 247, 0.15);
+    filter: saturate(1.05) contrast(1.05);
+}
+
+/* Soft radial glow behind the portrait */
+.hero-portrait-glow {
+    position: absolute;
+    inset: -18% -22%;
+    background:
+        radial-gradient(ellipse at 50% 50%,
+            rgba(47, 129, 247, 0.35) 0%,
+            rgba(139, 92, 246, 0.22) 35%,
+            rgba(63, 185, 80, 0.12) 60%,
+            transparent 78%);
+    filter: blur(14px);
+    z-index: -1;
+    pointer-events: none;
+    animation: heroPortraitGlow 7s ease-in-out infinite alternate;
+}
+@keyframes heroPortraitGlow {
+    0%   { opacity: 0.75; transform: scale(1); }
+    100% { opacity: 1.0;  transform: scale(1.06); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .hero-portrait, .hero-portrait:hover { transform: none; }
+    .hero-portrait-glow { animation: none; }
 }
 
 /* 3D Showcase section */
