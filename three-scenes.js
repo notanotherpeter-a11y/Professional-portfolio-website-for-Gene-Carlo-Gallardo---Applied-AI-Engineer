@@ -173,11 +173,16 @@
         const points = new THREE.Points(pGeom, pMat);
         scene.add(points);
 
-        // 3D Monogram "GC" — extruded text via shapes
+        // 3D Monogram "GC" — extruded text via shapes (pushed back behind portrait)
         const monogram = buildMonogram();
-        monogram.position.set(0, 0, 0);
-        monogram.scale.setScalar(4.5);
+        monogram.position.set(14, 6, -12);
+        monogram.scale.setScalar(2.6);
         scene.add(monogram);
+
+        // 3D Portrait — textured plane floating in the scene
+        const portrait = buildPortraitCard('assets/gene-portrait.jpg');
+        portrait.position.set(-4, 0, 10);
+        scene.add(portrait);
 
         // Lighting for monogram
         scene.add(new THREE.AmbientLight(0xffffff, 0.4));
@@ -260,7 +265,15 @@
                 points.rotation.y = t * 0.03;
                 monogram.rotation.y = Math.sin(t * 0.4) * 0.5;
                 monogram.rotation.x = Math.sin(t * 0.3) * 0.15;
-                monogram.position.y = Math.sin(t * 0.8) * 0.8;
+                monogram.position.y = 6 + Math.sin(t * 0.8) * 0.4;
+
+                // Portrait: subtle float + mouse-driven tilt (parallax toward cursor)
+                const tiltX = (mouseScreen.y - 0.5) * 0.35;
+                const tiltY = (mouseScreen.x - 0.5) * -0.45;
+                portrait.rotation.x += (tiltX - portrait.rotation.x) * 0.06;
+                portrait.rotation.y += (tiltY - portrait.rotation.y) * 0.06;
+                portrait.position.y = Math.sin(t * 0.6) * 0.5;
+                portrait.position.x = -4 + Math.sin(t * 0.4) * 0.25;
             }
 
             // Camera parallax toward mouse
@@ -330,6 +343,95 @@
         halo2.rotation.y = Math.PI * 0.2;
         group.add(halo2);
 
+        return group;
+    }
+
+    /* Build a 3D "portrait card" — textured plane with glow frame and rim.
+     * Returns a THREE.Group containing the portrait plane plus frame accents.
+     * Exposes .userData.portrait = the textured plane for easy animation.
+     */
+    function buildPortraitCard(url) {
+        const group = new THREE.Group();
+
+        // Portrait dimensions — roughly 3:4 (matches source photo aspect)
+        const W = 10.5;
+        const H = 14;
+
+        // Outer glow frame (slightly larger, emissive)
+        const frameMat = new THREE.MeshStandardMaterial({
+            color: 0x0D1117,
+            emissive: 0x2F81F7,
+            emissiveIntensity: 0.5,
+            metalness: 0.85,
+            roughness: 0.25
+        });
+        const frameShape = new THREE.Shape();
+        const fw = W + 0.9, fh = H + 0.9;
+        frameShape.moveTo(-fw / 2, -fh / 2);
+        frameShape.lineTo(fw / 2, -fh / 2);
+        frameShape.lineTo(fw / 2, fh / 2);
+        frameShape.lineTo(-fw / 2, fh / 2);
+        frameShape.lineTo(-fw / 2, -fh / 2);
+        const frameHole = new THREE.Path();
+        frameHole.moveTo(-W / 2, -H / 2);
+        frameHole.lineTo(W / 2, -H / 2);
+        frameHole.lineTo(W / 2, H / 2);
+        frameHole.lineTo(-W / 2, H / 2);
+        frameHole.lineTo(-W / 2, -H / 2);
+        frameShape.holes.push(frameHole);
+        const frameGeom = new THREE.ExtrudeGeometry(frameShape, {
+            depth: 0.35, bevelEnabled: true, bevelSize: 0.12, bevelThickness: 0.12, bevelSegments: 4
+        });
+        const frame = new THREE.Mesh(frameGeom, frameMat);
+        frame.position.z = -0.1;
+        group.add(frame);
+
+        // Portrait plane with texture
+        const planeGeom = new THREE.PlaneGeometry(W, H, 1, 1);
+        const planeMat = new THREE.MeshStandardMaterial({
+            color: 0x333333,
+            metalness: 0.15,
+            roughness: 0.55,
+            transparent: false
+        });
+        const plane = new THREE.Mesh(planeGeom, planeMat);
+        plane.position.z = 0.25;
+        group.add(plane);
+
+        // Async texture load — avoid throwing if file 404s
+        const loader = new THREE.TextureLoader();
+        loader.load(
+            url,
+            function (tex) {
+                if ('colorSpace' in tex) tex.colorSpace = THREE.SRGBColorSpace;
+                else if ('encoding' in tex) tex.encoding = THREE.sRGBEncoding;
+                tex.anisotropy = 8;
+                planeMat.map = tex;
+                planeMat.color.setHex(0xffffff);
+                planeMat.needsUpdate = true;
+            },
+            undefined,
+            function () { console.warn('Portrait texture failed to load:', url); }
+        );
+
+        // Back-glow disc (soft halo behind card)
+        const glowGeom = new THREE.CircleGeometry(11, 48);
+        const glowMat = new THREE.MeshBasicMaterial({
+            color: 0x2F81F7, transparent: true, opacity: 0.18,
+            blending: THREE.AdditiveBlending, depthWrite: false
+        });
+        const glow = new THREE.Mesh(glowGeom, glowMat);
+        glow.position.z = -0.5;
+        group.add(glow);
+
+        // Rim line (thin outline for crispness)
+        const rimGeom = new THREE.EdgesGeometry(new THREE.PlaneGeometry(W + 0.05, H + 0.05));
+        const rimMat = new THREE.LineBasicMaterial({ color: 0x8B5CF6, transparent: true, opacity: 0.55 });
+        const rim = new THREE.LineSegments(rimGeom, rimMat);
+        rim.position.z = 0.26;
+        group.add(rim);
+
+        group.userData = { portrait: plane, frame: frame, glow: glow, rim: rim };
         return group;
     }
 
@@ -442,10 +544,15 @@
             }
         }
 
+        let lastW = 0, lastH = 0;
         function resize() {
-            const w = canvas.clientWidth || canvas.parentElement.clientWidth || 800;
-            const h = canvas.clientHeight || canvas.parentElement.clientHeight || 450;
+            const parent = canvas.parentElement;
+            const pRect = parent ? parent.getBoundingClientRect() : null;
+            const w = Math.round(canvas.clientWidth || (pRect && pRect.width) || parent?.clientWidth || 800);
+            const h = Math.round(canvas.clientHeight || (pRect && pRect.height) || parent?.clientHeight || 450);
             if (w < 2 || h < 2) return;
+            if (w === lastW && h === lastH) return;
+            lastW = w; lastH = h;
             renderer.setSize(w, h, false);
             camera.aspect = w / h;
             camera.updateProjectionMatrix();
@@ -458,6 +565,15 @@
         requestAnimationFrame(resize);
         setTimeout(resize, 100);
         setTimeout(resize, 500);
+        setTimeout(resize, 1500);
+        // IntersectionObserver: resize when stage first becomes visible (fixes
+        // layout-delayed 0x0 canvas when section is below the fold at load).
+        if (typeof IntersectionObserver !== 'undefined' && canvas.parentElement) {
+            const io = new IntersectionObserver(function (entries) {
+                entries.forEach(function (e) { if (e.isIntersecting) resize(); });
+            }, { threshold: 0.01 });
+            io.observe(canvas.parentElement);
+        }
 
         // Drag-to-rotate
         let dragging = false, lastX = 0, lastY = 0;
@@ -490,9 +606,14 @@
         window.addEventListener('scroll', updateScroll, { passive: true });
         updateScroll();
 
+        let resizeTick = 0;
         function animate() {
             requestAnimationFrame(animate);
             const t = clock.getElapsedTime();
+
+            // Safety: recheck size every ~30 frames in case the canvas
+            // was laid out after initial resize (aspect-ratio CSS race).
+            if ((++resizeTick % 30) === 0) resize();
 
             if (!still) {
                 core.rotation.y += 0.005;
