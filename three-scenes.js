@@ -372,46 +372,35 @@
         const W = 10.5;
         const H = 14;
 
-        // Outer glow frame (slightly larger, emissive)
-        const frameMat = new THREE.MeshStandardMaterial({
-            color: 0x0D1117,
-            emissive: 0x2F81F7,
-            emissiveIntensity: 0.5,
-            metalness: 0.85,
-            roughness: 0.25
-        });
-        const frameShape = new THREE.Shape();
-        const fw = W + 0.9, fh = H + 0.9;
-        frameShape.moveTo(-fw / 2, -fh / 2);
-        frameShape.lineTo(fw / 2, -fh / 2);
-        frameShape.lineTo(fw / 2, fh / 2);
-        frameShape.lineTo(-fw / 2, fh / 2);
-        frameShape.lineTo(-fw / 2, -fh / 2);
-        const frameHole = new THREE.Path();
-        frameHole.moveTo(-W / 2, -H / 2);
-        frameHole.lineTo(W / 2, -H / 2);
-        frameHole.lineTo(W / 2, H / 2);
-        frameHole.lineTo(-W / 2, H / 2);
-        frameHole.lineTo(-W / 2, -H / 2);
-        frameShape.holes.push(frameHole);
-        const frameGeom = new THREE.ExtrudeGeometry(frameShape, {
-            depth: 0.35, bevelEnabled: true, bevelSize: 0.12, bevelThickness: 0.12, bevelSegments: 4
-        });
-        const frame = new THREE.Mesh(frameGeom, frameMat);
-        frame.position.z = -0.1;
-        group.add(frame);
+        // Feathered alpha mask — soft oval that fades to transparent so the
+        // photo blends into the aurora bg instead of sitting as a hard rectangle.
+        const maskCanvas = document.createElement('canvas');
+        maskCanvas.width = 256; maskCanvas.height = 340;
+        const mctx = maskCanvas.getContext('2d');
+        const grd = mctx.createRadialGradient(128, 170, 40, 128, 170, 180);
+        grd.addColorStop(0.00, 'rgba(255,255,255,1)');
+        grd.addColorStop(0.55, 'rgba(255,255,255,1)');
+        grd.addColorStop(0.80, 'rgba(255,255,255,0.55)');
+        grd.addColorStop(1.00, 'rgba(255,255,255,0)');
+        mctx.fillStyle = grd;
+        mctx.fillRect(0, 0, 256, 340);
+        const alphaTex = new THREE.CanvasTexture(maskCanvas);
 
-        // Portrait plane with texture — unlit-ish so the photo reads at full
-        // brightness regardless of scene lighting. MeshBasicMaterial ignores
-        // lights (avoids the "dark photo gets darker" problem).
+        // Portrait plane — unlit + feathered alphaMap so edges blend.
         const planeGeom = new THREE.PlaneGeometry(W, H, 1, 1);
         const planeMat = new THREE.MeshBasicMaterial({
             color: 0xffffff,
-            toneMapped: false
+            toneMapped: false,
+            transparent: true,
+            alphaMap: alphaTex,
+            depthWrite: false
         });
         const plane = new THREE.Mesh(planeGeom, planeMat);
         plane.position.z = 0.25;
         group.add(plane);
+
+        // Frame removed — feathered alpha + back-glow do the presence work now.
+        const frame = null;
 
         // Async texture load — avoid throwing if file 404s
         const loader = new THREE.TextureLoader();
@@ -429,22 +418,29 @@
             function () { console.warn('Portrait texture failed to load:', url); }
         );
 
-        // Back-glow disc (soft halo behind card) — stronger for presence
-        const glowGeom = new THREE.CircleGeometry(13, 64);
+        // Back-glow disc (soft radial halo). Built from a radial-gradient
+        // canvas texture so the glow itself has feathered edges.
+        const glowCanvas = document.createElement('canvas');
+        glowCanvas.width = 256; glowCanvas.height = 256;
+        const gctx = glowCanvas.getContext('2d');
+        const gg = gctx.createRadialGradient(128, 128, 10, 128, 128, 128);
+        gg.addColorStop(0.00, 'rgba(47,129,247,0.55)');
+        gg.addColorStop(0.45, 'rgba(139,92,246,0.25)');
+        gg.addColorStop(1.00, 'rgba(0,0,0,0)');
+        gctx.fillStyle = gg;
+        gctx.fillRect(0, 0, 256, 256);
+        const glowTex = new THREE.CanvasTexture(glowCanvas);
+        const glowGeom = new THREE.PlaneGeometry(W * 2.1, H * 1.6);
         const glowMat = new THREE.MeshBasicMaterial({
-            color: 0x2F81F7, transparent: true, opacity: 0.35,
+            map: glowTex, transparent: true, opacity: 0.9,
             blending: THREE.AdditiveBlending, depthWrite: false
         });
         const glow = new THREE.Mesh(glowGeom, glowMat);
         glow.position.z = -0.5;
         group.add(glow);
 
-        // Rim line (thin outline for crispness)
-        const rimGeom = new THREE.EdgesGeometry(new THREE.PlaneGeometry(W + 0.05, H + 0.05));
-        const rimMat = new THREE.LineBasicMaterial({ color: 0x8B5CF6, transparent: true, opacity: 0.9 });
-        const rim = new THREE.LineSegments(rimGeom, rimMat);
-        rim.position.z = 0.26;
-        group.add(rim);
+        // Rim removed — feathered edges do the blending now.
+        const rim = null;
 
         group.userData = { portrait: plane, frame: frame, glow: glow, rim: rim };
         return group;
