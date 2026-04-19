@@ -516,6 +516,197 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+// ===== HERO CANVAS: Neural Network Particle Animation =====
+function initHeroCanvas() {
+    const canvas = document.getElementById('hero-canvas');
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    const hero = document.querySelector('.hero');
+
+    const CONFIG = {
+        count: 72,
+        maxDist: 140,
+        baseSpeed: 0.35,
+        mouseRadius: 180,
+        mouseRepel: 0.018,
+        colors: ['#2F81F7', '#58A6FF', '#3FB950', '#388bfd'],
+        lineColor: '47, 129, 247',
+    };
+
+    let width, height, particles;
+    const mouse = { x: -9999, y: -9999 };
+    let animId;
+
+    function resize() {
+        width  = canvas.width  = hero.offsetWidth;
+        height = canvas.height = hero.offsetHeight;
+    }
+
+    function spawn() {
+        particles = Array.from({ length: CONFIG.count }, () => ({
+            x:  Math.random() * width,
+            y:  Math.random() * height,
+            vx: (Math.random() - 0.5) * CONFIG.baseSpeed,
+            vy: (Math.random() - 0.5) * CONFIG.baseSpeed,
+            r:  Math.random() * 1.8 + 0.8,
+            color: CONFIG.colors[Math.floor(Math.random() * CONFIG.colors.length)],
+            alpha: Math.random() * 0.4 + 0.35,
+        }));
+    }
+
+    hero.addEventListener('mousemove', e => {
+        const r = hero.getBoundingClientRect();
+        mouse.x = e.clientX - r.left;
+        mouse.y = e.clientY - r.top;
+    });
+
+    hero.addEventListener('mouseleave', () => {
+        mouse.x = -9999;
+        mouse.y = -9999;
+    });
+
+    function tick() {
+        ctx.clearRect(0, 0, width, height);
+
+        for (let i = 0; i < particles.length; i++) {
+            const p = particles[i];
+
+            // Mouse repulsion
+            const mx = mouse.x - p.x;
+            const my = mouse.y - p.y;
+            const md = Math.sqrt(mx * mx + my * my);
+            if (md < CONFIG.mouseRadius && md > 0) {
+                const force = (1 - md / CONFIG.mouseRadius) * CONFIG.mouseRepel;
+                p.vx -= (mx / md) * force;
+                p.vy -= (my / md) * force;
+            }
+
+            // Dampen + clamp
+            p.vx *= 0.992;
+            p.vy *= 0.992;
+            const spd = Math.hypot(p.vx, p.vy);
+            if (spd > CONFIG.baseSpeed * 2.5) {
+                p.vx = (p.vx / spd) * CONFIG.baseSpeed * 2.5;
+                p.vy = (p.vy / spd) * CONFIG.baseSpeed * 2.5;
+            }
+
+            p.x += p.vx;
+            p.y += p.vy;
+
+            // Soft bounce
+            if (p.x < 0)      { p.x = 0;     p.vx *= -1; }
+            if (p.x > width)  { p.x = width;  p.vx *= -1; }
+            if (p.y < 0)      { p.y = 0;      p.vy *= -1; }
+            if (p.y > height) { p.y = height; p.vy *= -1; }
+
+            // Draw node
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            ctx.fillStyle = p.color;
+            ctx.globalAlpha = p.alpha;
+            ctx.fill();
+            ctx.globalAlpha = 1;
+
+            // Draw edges to nearby nodes
+            for (let j = i + 1; j < particles.length; j++) {
+                const q = particles[j];
+                const dx = p.x - q.x;
+                const dy = p.y - q.y;
+                const d  = Math.hypot(dx, dy);
+                if (d < CONFIG.maxDist) {
+                    ctx.beginPath();
+                    ctx.moveTo(p.x, p.y);
+                    ctx.lineTo(q.x, q.y);
+                    ctx.strokeStyle = `rgba(${CONFIG.lineColor}, ${(1 - d / CONFIG.maxDist) * 0.25})`;
+                    ctx.lineWidth = 0.8;
+                    ctx.stroke();
+                }
+            }
+        }
+
+        animId = requestAnimationFrame(tick);
+    }
+
+    resize();
+    spawn();
+    tick();
+
+    window.addEventListener('resize', () => {
+        cancelAnimationFrame(animId);
+        resize();
+        spawn();
+        tick();
+    });
+}
+
+// ===== 3D CARD TILT =====
+function init3DCardTilt() {
+    const cards = document.querySelectorAll('.project-card, .fact-card, .education-card');
+
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', () => {
+            card.style.transition = 'border-color 0.2s ease, box-shadow 0.2s ease';
+        });
+
+        card.addEventListener('mousemove', e => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const cx = rect.width  / 2;
+            const cy = rect.height / 2;
+
+            const maxTilt = card.classList.contains('project-card') ? 8 : 6;
+            const rotX = ((y - cy) / cy) * -maxTilt;
+            const rotY = ((x - cx) / cx) *  maxTilt;
+
+            const glowX = (x / rect.width)  * 100;
+            const glowY = (y / rect.height) * 100;
+
+            card.style.transform  = `perspective(900px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateZ(6px)`;
+            card.style.background = `radial-gradient(circle at ${glowX}% ${glowY}%, rgba(47,129,247,0.09) 0%, var(--bg-tertiary) 65%)`;
+        });
+
+        card.addEventListener('mouseleave', () => {
+            card.style.transition = 'transform 0.5s ease, background 0.5s ease, border-color 0.2s ease, box-shadow 0.2s ease';
+            card.style.transform  = '';
+            card.style.background = '';
+        });
+    });
+}
+
+// ===== 3D TIMELINE SLIDE-IN =====
+function initTimelineReveal() {
+    const items = document.querySelectorAll('.timeline-item');
+    if (!items.length) return;
+
+    const obs = new IntersectionObserver(entries => {
+        entries.forEach((entry, i) => {
+            if (entry.isIntersecting) {
+                setTimeout(() => {
+                    entry.target.style.opacity   = '1';
+                    entry.target.style.transform = 'translateX(0) perspective(600px) rotateY(0deg)';
+                }, i * 80);
+                obs.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.15 });
+
+    items.forEach(el => {
+        el.style.opacity    = '0';
+        el.style.transform  = 'translateX(-40px) perspective(600px) rotateY(-8deg)';
+        el.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
+        obs.observe(el);
+    });
+}
+
+// ===== INIT ALL 3D EFFECTS =====
+document.addEventListener('DOMContentLoaded', () => {
+    initHeroCanvas();
+    init3DCardTilt();
+    initTimelineReveal();
+});
+
 // Utility function for smooth reveal animations
 function revealOnScroll() {
     const reveals = document.querySelectorAll('.reveal');
