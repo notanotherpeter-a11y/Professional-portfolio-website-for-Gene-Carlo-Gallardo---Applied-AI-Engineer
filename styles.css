@@ -173,11 +173,82 @@ body {
 }
 
 .hero-name {
-    font-size: clamp(2.5rem, 8vw, 4.5rem);
-    font-weight: 700;
+    font-size: clamp(2.6rem, 9vw, 5.5rem);
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    line-height: 1.02;
     color: var(--text-primary);
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
     animation: fadeInUp 1s ease-out;
+}
+.hero-name-accent {
+    background: linear-gradient(100deg, #2F81F7 0%, #8B5CF6 50%, #3FB950 100%);
+    -webkit-background-clip: text;
+            background-clip: text;
+    -webkit-text-fill-color: transparent;
+            color: transparent;
+    background-size: 220% auto;
+    animation: heroAccentShift 8s ease-in-out infinite alternate;
+}
+@keyframes heroAccentShift {
+    0%   { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
+}
+
+/* Status badge — glassy pill with pulsing dot */
+.hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.45rem 0.9rem;
+    margin-bottom: 1.25rem;
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 0.78rem;
+    letter-spacing: 0.02em;
+    color: var(--text-primary);
+    background: rgba(22, 27, 34, 0.55);
+    border: 1px solid rgba(47, 129, 247, 0.25);
+    border-radius: 999px;
+    backdrop-filter: blur(10px) saturate(140%);
+    -webkit-backdrop-filter: blur(10px) saturate(140%);
+    animation: fadeInUp 1s ease-out;
+}
+.hero-badge-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: #3FB950;
+    box-shadow: 0 0 0 0 rgba(63, 185, 80, 0.7);
+    animation: heroBadgePulse 2s infinite;
+}
+@keyframes heroBadgePulse {
+    0%   { box-shadow: 0 0 0 0 rgba(63, 185, 80, 0.7); }
+    70%  { box-shadow: 0 0 0 8px rgba(63, 185, 80, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(63, 185, 80, 0); }
+}
+
+/* Tech chips */
+.hero-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    animation: fadeInUp 1s ease-out 0.5s both;
+}
+.hero-chip {
+    padding: 0.35rem 0.75rem;
+    font-size: 0.78rem;
+    font-family: var(--font-mono, ui-monospace, monospace);
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    transition: transform 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+.hero-chip:hover {
+    transform: translateY(-1px);
+    border-color: rgba(47, 129, 247, 0.45);
+    color: var(--text-primary);
 }
 
 .hero-subtitle {
@@ -1114,69 +1185,100 @@ section {
     .hero-ctas { justify-content: flex-start; }
 }
 
-/* Portrait card — feathered, glowing, subtly tilted */
+/* Portrait — modern squircle with animated conic gradient ring */
 .hero-portrait {
     position: relative;
-    width: min(78vw, 340px);
-    aspect-ratio: 3 / 4;
-    border-radius: 22px;
-    overflow: visible;
-    transform: perspective(1100px) rotateY(-7deg) rotateX(3deg);
-    transition: transform 0.6s ease;
-    order: 2; /* below text on mobile */
-    margin-top: 0.5rem;
+    width: min(74vw, 320px);
+    aspect-ratio: 4 / 5;
+    transform: perspective(1200px) rotateY(-6deg) rotateX(3deg);
+    transition: transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+    order: 2;
+    margin-top: 0.75rem;
+    isolation: isolate;
 }
 @media (min-width: 900px) {
     .hero-portrait {
-        width: min(28vw, 420px);
-        transform: perspective(1100px) rotateY(-9deg) rotateX(4deg) translateZ(0);
+        width: min(26vw, 400px);
+        transform: perspective(1200px) rotateY(-8deg) rotateX(4deg);
     }
 }
 .hero-portrait:hover {
-    transform: perspective(1100px) rotateY(-4deg) rotateX(2deg) scale(1.02);
+    transform: perspective(1200px) rotateY(-3deg) rotateX(2deg) scale(1.02);
 }
 
-.hero-portrait-img {
+/* Animated conic-gradient ring (the modern "aura border") */
+.hero-portrait-ring {
+    position: absolute;
+    inset: -6px;
+    border-radius: 36px;
+    padding: 2px;
+    background: conic-gradient(from 0deg,
+        #2F81F7, #8B5CF6, #3FB950, #D29922, #2F81F7);
+    -webkit-mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    animation: heroRingSpin 10s linear infinite;
+    opacity: 0.85;
+    z-index: 0;
+}
+@keyframes heroRingSpin {
+    to { transform: rotate(360deg); }
+}
+
+/* Glass frame that holds the photo */
+.hero-portrait-frame {
     position: relative;
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    border-radius: 22px;
-    display: block;
-    /* Feathered edges: fade to transparent near the border so the photo
-     * blends into the hero background instead of sitting as a hard card. */
-    -webkit-mask-image: radial-gradient(ellipse 82% 86% at 50% 48%,
-        #000 55%, rgba(0,0,0,0.85) 72%, rgba(0,0,0,0.35) 88%, transparent 100%);
-            mask-image: radial-gradient(ellipse 82% 86% at 50% 48%,
-        #000 55%, rgba(0,0,0,0.85) 72%, rgba(0,0,0,0.35) 88%, transparent 100%);
+    border-radius: 32px;
+    overflow: hidden;
+    background: rgba(13, 17, 23, 0.55);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     box-shadow:
-        0 30px 80px rgba(0, 0, 0, 0.45),
-        0 0 0 1px rgba(47, 129, 247, 0.15);
-    filter: saturate(1.05) contrast(1.05);
+        0 40px 90px rgba(0, 0, 0, 0.55),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+    z-index: 1;
 }
 
-/* Soft radial glow behind the portrait */
+.hero-portrait-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 30%;
+    display: block;
+    filter: saturate(1.06) contrast(1.05);
+    /* Subtle feather at the bottom so the photo melts into the frame's
+     * glass base — cleaner than a full radial mask. */
+    -webkit-mask-image: linear-gradient(180deg, #000 70%, rgba(0,0,0,0.85) 100%);
+            mask-image: linear-gradient(180deg, #000 70%, rgba(0,0,0,0.85) 100%);
+}
+
+/* Soft ambient glow behind the portrait (modern, not hard shadow) */
 .hero-portrait-glow {
     position: absolute;
-    inset: -18% -22%;
+    inset: -22% -28%;
     background:
         radial-gradient(ellipse at 50% 50%,
-            rgba(47, 129, 247, 0.35) 0%,
-            rgba(139, 92, 246, 0.22) 35%,
-            rgba(63, 185, 80, 0.12) 60%,
-            transparent 78%);
-    filter: blur(14px);
+            rgba(47, 129, 247, 0.45) 0%,
+            rgba(139, 92, 246, 0.28) 35%,
+            rgba(63, 185, 80, 0.14) 60%,
+            transparent 80%);
+    filter: blur(22px);
     z-index: -1;
     pointer-events: none;
     animation: heroPortraitGlow 7s ease-in-out infinite alternate;
 }
 @keyframes heroPortraitGlow {
-    0%   { opacity: 0.75; transform: scale(1); }
-    100% { opacity: 1.0;  transform: scale(1.06); }
+    0%   { opacity: 0.7; transform: scale(1); }
+    100% { opacity: 1.0; transform: scale(1.08); }
 }
 @media (prefers-reduced-motion: reduce) {
     .hero-portrait, .hero-portrait:hover { transform: none; }
-    .hero-portrait-glow { animation: none; }
+    .hero-portrait-glow, .hero-portrait-ring,
+    .hero-name-accent, .hero-badge-dot { animation: none; }
 }
 
 /* 3D Showcase section */
