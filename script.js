@@ -744,3 +744,17 @@ const throttledScrollHandler = throttle(() => {
 }, 16); // ~60fps
 
 window.addEventListener('scroll', throttledScrollHandler);
+// Hero live clock (Melbourne time)
+(function () {
+    const el = document.getElementById('hero-clock');
+    if (!el) return;
+    const fmt = new Intl.DateTimeFormat('en-AU', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+        timeZone: 'Australia/Melbourne'
+    });
+    const tick = () => { el.textContent = fmt.format(new Date()) + ' AEST'; };
+    tick();
+    setInterval(tick, 30000);
+})();

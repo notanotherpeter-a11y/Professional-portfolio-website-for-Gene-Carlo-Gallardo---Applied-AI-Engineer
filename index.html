@@ -20,7 +20,7 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
     
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
@@ -83,19 +83,29 @@
         <div class="container">
             <div class="hero-grid">
                 <div class="hero-content">
-                    <div class="hero-badge">
-                        <span class="hero-badge-dot"></span>
-                        Available for select engagements · Melbourne, AU
+                    <div class="hero-status" aria-hidden="true">
+                        <span class="hero-status-dot"></span>
+                        <span>STATUS&nbsp;OPEN</span>
+                        <span class="hero-status-sep">·</span>
+                        <span id="hero-clock">—</span>
+                        <span class="hero-status-sep">·</span>
+                        <span>MELBOURNE, AU</span>
                     </div>
-                    <h1 class="hero-name">Gene Carlo <span class="hero-name-accent">Gallardo</span></h1>
-                    <h2 class="hero-subtitle">Applied AI Engineer · Enterprise AI Strategist · Business Transformation Lead</h2>
-                    <p class="hero-tagline">I architect AI solutions that transform business operations and drive measurable value at enterprise scale.</p>
-                    <div class="hero-chips" aria-hidden="true">
-                        <span class="hero-chip">Agentic Systems</span>
-                        <span class="hero-chip">LLM Orchestration</span>
-                        <span class="hero-chip">Automation</span>
-                        <span class="hero-chip">Enterprise AI</span>
+                    <h1 class="hero-display">
+                        <span class="hero-display-line">APPLIED AI</span>
+                        <span class="hero-display-line">ENGINEER</span>
+                    </h1>
+                    <div class="hero-meta">
+                        <span class="hero-meta-label">[ INDEX / 00 ]</span>
+                        <span class="hero-meta-name">Gene Carlo Gallardo</span>
                     </div>
+                    <p class="hero-tagline">Enterprise AI Strategist &amp; Business Transformation Lead. I architect AI systems that drive measurable value at scale.</p>
+                    <ul class="hero-chips" aria-hidden="true">
+                        <li class="hero-chip"><span class="hero-chip-num">[ 01 ]</span> Agentic Systems</li>
+                        <li class="hero-chip"><span class="hero-chip-num">[ 02 ]</span> LLM Orchestration</li>
+                        <li class="hero-chip"><span class="hero-chip-num">[ 03 ]</span> Automation</li>
+                        <li class="hero-chip"><span class="hero-chip-num">[ 04 ]</span> Enterprise AI</li>
+                    </ul>
                     <div class="hero-ctas">
                         <a href="#projects" class="btn btn-primary">View My Work →</a>
                         <a href="#contact" class="btn btn-secondary">Get In Touch</a>
@@ -118,7 +128,7 @@
     <!-- About Section -->
     <section class="about" id="about">
         <div class="container">
-            <h2 class="section-heading">About</h2>
+            <h2 class="section-heading"><span class="section-num">[ 01 ]</span> About</h2>
             <div class="about-content">
                 <div class="about-bio">
                     <p>I am an Applied AI Engineer and Enterprise AI Strategist based in Melbourne, Australia. As founder of Syntyx Labs Pty Ltd, I architect AI transformation initiatives that bridge technical innovation with strategic business value. My 15+ years across logistics, healthcare, finance, and real estate provides deep operational insight into where AI creates genuine competitive advantage. I design AI systems that don't just automate processes—they fundamentally transform how businesses operate, scale, and compete. From conversational AI agents to enterprise automation platforms, I build AI solutions that deliver measurable ROI and sustainable business growth.</p>
@@ -165,7 +175,7 @@
     <!-- Skills Section -->
     <section class="skills" id="skills">
         <div class="container">
-            <h2 class="section-heading">Skills</h2>
+            <h2 class="section-heading"><span class="section-num">[ 02 ]</span> Skills</h2>
             <div class="skills-content">
                 <div class="skill-group">
                     <h3 class="skill-group-title">AI Strategy & Enterprise Transformation</h3>
@@ -217,29 +227,79 @@
         </div>
     </section>
 
-    <!-- 3D Showcase Section -->
-    <section class="showcase3d" id="showcase3d" aria-label="Interactive 3D showcase">
+    <!-- Capabilities Section (Profexor-inspired) -->
+    <section class="capabilities" id="capabilities" aria-label="Capabilities">
         <div class="container">
-            <h2 class="section-heading">Interactive Showcase</h2>
-            <p class="showcase3d-intro">A live, interactive representation of how autonomous AI agents connect data, decisions, and business outcomes — rendered in real time with WebGL.</p>
-            <div class="showcase3d-stage">
-                <canvas id="showcase-3d-canvas" class="showcase-3d-canvas" aria-hidden="true"></canvas>
-                <div class="showcase3d-overlay">
-                    <div class="showcase3d-badge"><span class="dot"></span> Rendering live · WebGL</div>
-                </div>
-            </div>
-            <div class="showcase3d-captions">
-                <div class="showcase3d-caption"><strong>Nodes</strong><span>Autonomous agents</span></div>
-                <div class="showcase3d-caption"><strong>Edges</strong><span>Context & tool calls</span></div>
-                <div class="showcase3d-caption"><strong>Core</strong><span>Orchestration layer</span></div>
-            </div>
+            <h2 class="section-heading"><span class="section-num">[ 03 ]</span> Capabilities</h2>
+            <p class="capabilities-intro">End-to-end AI delivery — from research and system design through agentic orchestration, production deployment, and business-outcome measurement.</p>
+            <ul class="cap-grid">
+                <li class="cap-card" style="--cap-a:#2F81F7;--cap-b:#8B5CF6;">
+                    <div class="cap-visual" aria-hidden="true">
+                        <div class="cap-orb"></div>
+                        <div class="cap-grid-bg"></div>
+                    </div>
+                    <div class="cap-meta">
+                        <span class="cap-num">[ 01 ]</span>
+                        <span class="cap-label">Agentic Systems</span>
+                    </div>
+                    <p class="cap-desc">Autonomous multi-agent architectures that plan, delegate, and execute across tools and memory.</p>
+                </li>
+                <li class="cap-card" style="--cap-a:#3FB950;--cap-b:#2F81F7;">
+                    <div class="cap-visual" aria-hidden="true">
+                        <div class="cap-waves"></div>
+                    </div>
+                    <div class="cap-meta">
+                        <span class="cap-num">[ 02 ]</span>
+                        <span class="cap-label">LLM Orchestration</span>
+                    </div>
+                    <p class="cap-desc">Routing, prompt pipelines, tool-use, caching, and fallback strategies across model providers.</p>
+                </li>
+                <li class="cap-card" style="--cap-a:#8B5CF6;--cap-b:#D29922;">
+                    <div class="cap-visual" aria-hidden="true">
+                        <div class="cap-flow"></div>
+                    </div>
+                    <div class="cap-meta">
+                        <span class="cap-num">[ 03 ]</span>
+                        <span class="cap-label">Enterprise Automation</span>
+                    </div>
+                    <p class="cap-desc">Workflow replacement from ops to revenue — tickets, outreach, reporting, reconciliation, compliance.</p>
+                </li>
+                <li class="cap-card" style="--cap-a:#D29922;--cap-b:#3FB950;">
+                    <div class="cap-visual" aria-hidden="true">
+                        <div class="cap-bars"></div>
+                    </div>
+                    <div class="cap-meta">
+                        <span class="cap-num">[ 04 ]</span>
+                        <span class="cap-label">Data &amp; RAG Platforms</span>
+                    </div>
+                    <p class="cap-desc">Retrieval pipelines, embedding stores, structured extraction, and evaluation harnesses.</p>
+                </li>
+                <li class="cap-card" style="--cap-a:#2F81F7;--cap-b:#3FB950;">
+                    <div class="cap-visual" aria-hidden="true">
+                        <div class="cap-pulse"></div>
+                    </div>
+                    <div class="cap-meta">
+                        <span class="cap-num">[ 05 ]</span>
+                        <span class="cap-label">AI Strategy &amp; Transformation</span>
+                    </div>
+                    <p class="cap-desc">Opportunity mapping, build-vs-buy, governance, rollout roadmaps, and ROI instrumentation.</p>
+                </li>
+                <li class="cap-card cap-card--cta">
+                    <div class="cap-meta">
+                        <span class="cap-num">[ &rarr; ]</span>
+                        <span class="cap-label">Start a project</span>
+                    </div>
+                    <p class="cap-desc">Have something in motion, or starting from zero? Let's talk scope.</p>
+                    <a class="cap-cta" href="#contact">Get in touch →</a>
+                </li>
+            </ul>
         </div>
     </section>
 
     <!-- Projects Section -->
     <section class="projects" id="projects">
         <div class="container">
-            <h2 class="section-heading">Projects</h2>
+            <h2 class="section-heading"><span class="section-num">[ 04 ]</span> Projects</h2>
             <div class="projects-grid">
                 <div class="project-card" onclick="openProject('project1')">
                     <div class="project-header">
@@ -331,7 +391,7 @@
     <!-- Experience Section -->
     <section class="experience" id="experience">
         <div class="container">
-            <h2 class="section-heading">Experience</h2>
+            <h2 class="section-heading"><span class="section-num">[ 05 ]</span> Experience</h2>
             <div class="timeline">
                 <div class="timeline-item">
                     <div class="timeline-marker"></div>
@@ -415,7 +475,7 @@
     <!-- Education Section -->
     <section class="education" id="education">
         <div class="container">
-            <h2 class="section-heading">Education</h2>
+            <h2 class="section-heading"><span class="section-num">[ 06 ]</span> Education</h2>
             <div class="education-grid">
                 <div class="education-card">
                     <h3 class="education-title">Diploma in Engineering (Fabrication Trade)</h3>
@@ -453,7 +513,7 @@
     <!-- Contact Section -->
     <section class="contact" id="contact">
         <div class="container">
-            <h2 class="section-heading">Ready for Your Next AI Transformation</h2>
+            <h2 class="section-heading"><span class="section-num">[ 07 ]</span> Ready for Your Next AI Transformation</h2>
             <p class="contact-intro">I'm actively seeking senior AI leadership roles where I can drive enterprise transformation and deliver strategic business value. Open to Head of AI, AI Strategy, and Business Transformation positions.</p>
             
             <div class="contact-content">
