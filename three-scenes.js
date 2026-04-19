@@ -190,8 +190,9 @@
 
         /* --- Sizing --- */
         function resize() {
-            const w = canvas.clientWidth || canvas.parentElement.clientWidth;
-            const h = canvas.clientHeight || canvas.parentElement.clientHeight;
+            const w = canvas.clientWidth || canvas.parentElement.clientWidth || window.innerWidth;
+            const h = canvas.clientHeight || canvas.parentElement.clientHeight || window.innerHeight;
+            if (w < 2 || h < 2) return;
             renderer.setSize(w, h, false);
             camera.aspect = w / h;
             camera.updateProjectionMatrix();
@@ -199,6 +200,12 @@
         }
         resize();
         window.addEventListener('resize', resize);
+        if (typeof ResizeObserver !== 'undefined') {
+            new ResizeObserver(resize).observe(canvas.parentElement || canvas);
+        }
+        requestAnimationFrame(resize);
+        setTimeout(resize, 100);
+        setTimeout(resize, 500);
 
         /* --- Mouse --- */
         const mouseScreen = { x: 0.5, y: 0.5 };
@@ -436,14 +443,21 @@
         }
 
         function resize() {
-            const w = canvas.clientWidth || canvas.parentElement.clientWidth;
-            const h = canvas.clientHeight || canvas.parentElement.clientHeight;
+            const w = canvas.clientWidth || canvas.parentElement.clientWidth || 800;
+            const h = canvas.clientHeight || canvas.parentElement.clientHeight || 450;
+            if (w < 2 || h < 2) return;
             renderer.setSize(w, h, false);
             camera.aspect = w / h;
             camera.updateProjectionMatrix();
         }
         resize();
         window.addEventListener('resize', resize);
+        if (typeof ResizeObserver !== 'undefined') {
+            new ResizeObserver(resize).observe(canvas.parentElement || canvas);
+        }
+        requestAnimationFrame(resize);
+        setTimeout(resize, 100);
+        setTimeout(resize, 500);
 
         // Drag-to-rotate
         let dragging = false, lastX = 0, lastY = 0;
