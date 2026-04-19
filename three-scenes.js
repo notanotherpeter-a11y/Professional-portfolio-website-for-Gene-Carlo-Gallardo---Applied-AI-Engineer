@@ -179,19 +179,32 @@
         monogram.scale.setScalar(2.6);
         scene.add(monogram);
 
-        // 3D Portrait — textured plane floating in the scene
+        // 3D Portrait — textured plane floating in the scene.
+        // Responsive: on narrow (mobile) viewports, push it lower and smaller
+        // so it doesn't sit directly behind the headline text.
         const portrait = buildPortraitCard('assets/gene-portrait.jpg');
-        portrait.position.set(-4, 0, 10);
+        const isNarrow = window.innerWidth < 768;
+        if (isNarrow) {
+            portrait.position.set(0, -14, 12);
+            portrait.scale.setScalar(0.85);
+        } else {
+            portrait.position.set(-18, -2, 12);
+            portrait.scale.setScalar(1.1);
+        }
         scene.add(portrait);
 
-        // Lighting for monogram
-        scene.add(new THREE.AmbientLight(0xffffff, 0.4));
-        const key = new THREE.DirectionalLight(0x2F81F7, 1.6);
-        key.position.set(5, 3, 5);
+        // Lighting — brighter overall + dedicated portrait key light
+        scene.add(new THREE.AmbientLight(0xffffff, 0.85));
+        const key = new THREE.DirectionalLight(0xffffff, 1.4);
+        key.position.set(5, 6, 10);
         scene.add(key);
         const rim = new THREE.DirectionalLight(0x8B5CF6, 1.1);
         rim.position.set(-4, -2, 2);
         scene.add(rim);
+        // Warm fill specifically aimed at the portrait
+        const portraitFill = new THREE.PointLight(0xfff0d8, 2.2, 40);
+        portraitFill.position.copy(portrait.position).add(new THREE.Vector3(0, 2, 8));
+        scene.add(portraitFill);
 
         /* --- Sizing --- */
         function resize() {
@@ -272,8 +285,10 @@
                 const tiltY = (mouseScreen.x - 0.5) * -0.45;
                 portrait.rotation.x += (tiltX - portrait.rotation.x) * 0.06;
                 portrait.rotation.y += (tiltY - portrait.rotation.y) * 0.06;
-                portrait.position.y = Math.sin(t * 0.6) * 0.5;
-                portrait.position.x = -4 + Math.sin(t * 0.4) * 0.25;
+                const baseY = isNarrow ? -14 : -2;
+                const baseX = isNarrow ? 0 : -18;
+                portrait.position.y = baseY + Math.sin(t * 0.6) * 0.5;
+                portrait.position.x = baseX + Math.sin(t * 0.4) * 0.25;
             }
 
             // Camera parallax toward mouse
@@ -386,13 +401,13 @@
         frame.position.z = -0.1;
         group.add(frame);
 
-        // Portrait plane with texture
+        // Portrait plane with texture — unlit-ish so the photo reads at full
+        // brightness regardless of scene lighting. MeshBasicMaterial ignores
+        // lights (avoids the "dark photo gets darker" problem).
         const planeGeom = new THREE.PlaneGeometry(W, H, 1, 1);
-        const planeMat = new THREE.MeshStandardMaterial({
-            color: 0x333333,
-            metalness: 0.15,
-            roughness: 0.55,
-            transparent: false
+        const planeMat = new THREE.MeshBasicMaterial({
+            color: 0xffffff,
+            toneMapped: false
         });
         const plane = new THREE.Mesh(planeGeom, planeMat);
         plane.position.z = 0.25;
@@ -414,10 +429,10 @@
             function () { console.warn('Portrait texture failed to load:', url); }
         );
 
-        // Back-glow disc (soft halo behind card)
-        const glowGeom = new THREE.CircleGeometry(11, 48);
+        // Back-glow disc (soft halo behind card) — stronger for presence
+        const glowGeom = new THREE.CircleGeometry(13, 64);
         const glowMat = new THREE.MeshBasicMaterial({
-            color: 0x2F81F7, transparent: true, opacity: 0.18,
+            color: 0x2F81F7, transparent: true, opacity: 0.35,
             blending: THREE.AdditiveBlending, depthWrite: false
         });
         const glow = new THREE.Mesh(glowGeom, glowMat);
@@ -426,7 +441,7 @@
 
         // Rim line (thin outline for crispness)
         const rimGeom = new THREE.EdgesGeometry(new THREE.PlaneGeometry(W + 0.05, H + 0.05));
-        const rimMat = new THREE.LineBasicMaterial({ color: 0x8B5CF6, transparent: true, opacity: 0.55 });
+        const rimMat = new THREE.LineBasicMaterial({ color: 0x8B5CF6, transparent: true, opacity: 0.9 });
         const rim = new THREE.LineSegments(rimGeom, rimMat);
         rim.position.z = 0.26;
         group.add(rim);
