@@ -1185,12 +1185,13 @@ section {
     .hero-ctas { justify-content: flex-start; }
 }
 
-/* Portrait — modern squircle with animated conic gradient ring */
+/* Portrait — modern compact squircle with animated conic gradient ring.
+ * Near-square aspect keeps the face prominent without a lanky crop. */
 .hero-portrait {
     position: relative;
-    width: min(74vw, 320px);
-    aspect-ratio: 4 / 5;
-    transform: perspective(1200px) rotateY(-6deg) rotateX(3deg);
+    width: min(58vw, 240px);
+    aspect-ratio: 1 / 1.15;
+    transform: perspective(1200px) rotateY(-5deg) rotateX(2deg);
     transition: transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
     order: 2;
     margin-top: 0.75rem;
@@ -1198,8 +1199,8 @@ section {
 }
 @media (min-width: 900px) {
     .hero-portrait {
-        width: min(26vw, 400px);
-        transform: perspective(1200px) rotateY(-8deg) rotateX(4deg);
+        width: min(22vw, 320px);
+        transform: perspective(1200px) rotateY(-7deg) rotateX(3deg);
     }
 }
 .hero-portrait:hover {
@@ -1209,8 +1210,8 @@ section {
 /* Animated conic-gradient ring (the modern "aura border") */
 .hero-portrait-ring {
     position: absolute;
-    inset: -6px;
-    border-radius: 36px;
+    inset: -5px;
+    border-radius: 30px;
     padding: 2px;
     background: conic-gradient(from 0deg,
         #2F81F7, #8B5CF6, #3FB950, #D29922, #2F81F7);
@@ -1232,13 +1233,13 @@ section {
     position: relative;
     width: 100%;
     height: 100%;
-    border-radius: 32px;
+    border-radius: 26px;
     overflow: hidden;
     background: rgba(13, 17, 23, 0.55);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     box-shadow:
-        0 40px 90px rgba(0, 0, 0, 0.55),
+        0 30px 70px rgba(0, 0, 0, 0.55),
         inset 0 0 0 1px rgba(255, 255, 255, 0.06);
     z-index: 1;
 }
@@ -1247,13 +1248,9 @@ section {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: 50% 30%;
+    object-position: 50% 22%;
     display: block;
-    filter: saturate(1.06) contrast(1.05);
-    /* Subtle feather at the bottom so the photo melts into the frame's
-     * glass base — cleaner than a full radial mask. */
-    -webkit-mask-image: linear-gradient(180deg, #000 70%, rgba(0,0,0,0.85) 100%);
-            mask-image: linear-gradient(180deg, #000 70%, rgba(0,0,0,0.85) 100%);
+    filter: saturate(1.08) contrast(1.06) brightness(1.04);
 }
 
 /* Soft ambient glow behind the portrait (modern, not hard shadow) */
