@@ -804,3 +804,78 @@ window.addEventListener('scroll', throttledScrollHandler);
 
     document.addEventListener('mousemove', onMove, { passive: true });
 })();
+
+// FX: Split-text reveal on hero display
+(function () {
+    const el = document.querySelector('.hero-display[data-split-text]');
+    if (!el) return;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const lines = el.querySelectorAll('.hero-display-line');
+    let idx = 0;
+    lines.forEach((line) => {
+        const text = line.textContent;
+        line.textContent = '';
+        for (const ch of text) {
+            const span = document.createElement('span');
+            span.className = 'split-char';
+            span.textContent = ch === ' ' ? '\u00A0' : ch;
+            span.style.setProperty('--split-delay', reduce ? '0s' : `${0.04 * idx + 0.15}s`);
+            line.appendChild(span);
+            idx++;
+        }
+    });
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => el.classList.add('is-revealed'));
+    });
+})();
+
+// FX: Cursor spotlight
+(function () {
+    const sp = document.getElementById('fx-spotlight');
+    if (!sp) return;
+    if (window.matchMedia('(hover: none)').matches) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    let tx = 0, ty = 0, cx = 0, cy = 0, rafId = null, shown = false;
+    const loop = () => {
+        cx += (tx - cx) * 0.12;
+        cy += (ty - cy) * 0.12;
+        sp.style.transform = `translate3d(${cx}px, ${cy}px, 0)`;
+        rafId = requestAnimationFrame(loop);
+    };
+    document.addEventListener('mousemove', (e) => {
+        tx = e.clientX;
+        ty = e.clientY;
+        if (!shown) { sp.classList.add('is-on'); shown = true; }
+        if (!rafId) rafId = requestAnimationFrame(loop);
+    }, { passive: true });
+    document.addEventListener('mouseleave', () => {
+        sp.classList.remove('is-on');
+        shown = false;
+    });
+})();
+
+// FX: Project card layered parallax
+(function () {
+    if (window.matchMedia('(hover: none)').matches) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const cards = document.querySelectorAll('.project-card');
+    cards.forEach((card) => {
+        let rafId = null, px = 0, py = 0;
+        const apply = () => {
+            card.style.setProperty('--px', px.toFixed(3));
+            card.style.setProperty('--py', py.toFixed(3));
+            rafId = null;
+        };
+        card.addEventListener('mousemove', (e) => {
+            const r = card.getBoundingClientRect();
+            px = ((e.clientX - r.left) / r.width - 0.5) * 2;   // -1 … 1
+            py = ((e.clientY - r.top) / r.height - 0.5) * 2;
+            if (!rafId) rafId = requestAnimationFrame(apply);
+        }, { passive: true });
+        card.addEventListener('mouseleave', () => {
+            px = 0; py = 0;
+            if (!rafId) rafId = requestAnimationFrame(apply);
+        });
+    });
+})();
