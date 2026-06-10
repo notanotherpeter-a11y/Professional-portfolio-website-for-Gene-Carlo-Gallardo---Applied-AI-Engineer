@@ -21,9 +21,21 @@
             console.warn('Three.js not loaded; 3D scenes disabled.');
             return;
         }
-        initHeroScene();
-        initShowcaseScene();
-        initCardTilt();
+        // Test WebGL availability before running any scene
+        try {
+            var testCanvas = document.createElement('canvas');
+            var testCtx = testCanvas.getContext('webgl') || testCanvas.getContext('experimental-webgl');
+            if (!testCtx) {
+                console.warn('WebGL not available; 3D scenes disabled.');
+                return;
+            }
+        } catch (e) {
+            console.warn('WebGL check failed; 3D scenes disabled.', e);
+            return;
+        }
+        try { initHeroScene(); } catch(e) { console.warn('Hero scene failed:', e); }
+        try { initShowcaseScene(); } catch(e) { console.warn('Showcase scene failed:', e); }
+        try { initCardTilt(); } catch(e) { console.warn('Card tilt failed:', e); }
     });
 
     /* =======================================================
