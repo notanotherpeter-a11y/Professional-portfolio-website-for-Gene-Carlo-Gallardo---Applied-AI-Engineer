@@ -879,3 +879,100 @@ window.addEventListener('scroll', throttledScrollHandler);
         });
     });
 })();
+
+// ── Chat Widget ──────────────────────────────────────────────────────────────
+(function () {
+    const FAQ = [
+        {
+            triggers: ['who are you', 'about yourself', 'introduce', 'tell me about you'],
+            answer: "I'm Gene Carlo Gallardo — Applied AI Engineer and Systems Developer based in Melbourne. I build AI-powered business systems: ERPs, automation pipelines, booking bots, and custom software for SMBs in Australia and the Philippines."
+        },
+        {
+            triggers: ['what do you do', 'services', 'what can you build', 'what do you offer', 'help me with'],
+            answer: "I build custom business systems: ERP/management dashboards, AI automation pipelines, booking bots, data scrapers, and full-stack web apps. My sweet spot is turning messy manual processes — spreadsheets, WhatsApp groups — into clean working software."
+        },
+        {
+            triggers: ['what have you built', 'projects', 'portfolio', 'work examples', 'show me'],
+            answer: "Recent builds:\n• Manok Manifesto ERP — inventory, POS, payroll for an F&B business\n• Kamayan commissary management system (kamayanresto.com)\n• Kamayan sa Taytay restaurant ERP with QR ordering + kitchen display\n• AI tradie booking bot for Australian tradies\n• LinkedIn automation system for a logistics client"
+        },
+        {
+            triggers: ['how much', 'price', 'cost', 'pricing', 'rates', 'charge', 'quote'],
+            answer: "Custom ERP systems: from $5–8K AUD setup + $300/mo\nWebsites + AI booking bots: from $3,500 setup + $700/mo\n\nHappy to scope your project — reach me at genecarlogallardo@gmail.com or 0420 418 888."
+        },
+        {
+            triggers: ['available', 'hire', 'work with', 'take on', 'freelance', 'open to'],
+            answer: "Yes, available for new projects. I work with businesses in Australia and the Philippines. Best first step: email genecarlogallardo@gmail.com with a quick description of what you need."
+        },
+        {
+            triggers: ['contact', 'reach you', 'get in touch', 'email', 'phone', 'call'],
+            answer: "📧 genecarlogallardo@gmail.com\n📞 0420 418 888\n💼 linkedin.com/in/gene-carlo-gallardo\n\nOr scroll to the contact form below!"
+        },
+        {
+            triggers: ['experience', 'background', 'history', 'cv', 'resume', 'worked at'],
+            answer: "Currently at Direct Warehouse Solutions as a Sales Engineer. Self-taught developer with a background in operations management. I've been building software for clients across F&B, logistics, and real estate since 2024. Download my CV from the nav above for the full picture."
+        },
+        {
+            triggers: ['tech', 'stack', 'technologies', 'tools', 'languages', 'framework'],
+            answer: "Primary stack:\n• React + Vite + Tailwind + shadcn/ui\n• Supabase (database + auth)\n• Cloudflare Workers + Hono (APIs + cron)\n• Python (automation, scraping, AI pipelines)\n• Claude AI SDK, Playwright, Three.js"
+        },
+        {
+            triggers: ['location', 'melbourne', 'remote', 'where', 'australia', 'philippines'],
+            answer: "Based in Melbourne, VIC, Australia. Work with clients across Australia and the Philippines. Remote-first — happy to meet in Melbourne if you're local."
+        },
+        {
+            triggers: ['blog', 'writing', 'posts', 'articles', 'notes'],
+            answer: "Check out the Notes & Writing section on this page — I've written about building ERPs, the ROI of custom software, and using Cloudflare Workers for cron jobs. More posts coming soon!"
+        }
+    ];
+
+    const DEFAULT = "Not sure about that one! For specific questions, reach Gene Carlo directly:\n📧 genecarlogallardo@gmail.com\n📞 0420 418 888";
+
+    function findAnswer(text) {
+        const lower = text.toLowerCase().trim();
+        for (const item of FAQ) {
+            if (item.triggers.some(t => lower.includes(t))) return item.answer;
+        }
+        return DEFAULT;
+    }
+
+    function addMsg(text, type) {
+        const msgs = document.getElementById('chat-messages');
+        const div = document.createElement('div');
+        div.className = 'chat-msg ' + type;
+        div.textContent = text;
+        msgs.appendChild(div);
+        msgs.scrollTop = msgs.scrollHeight;
+    }
+
+    function handleMessage(text) {
+        if (!text.trim()) return;
+        const sug = document.getElementById('chat-suggestions');
+        if (sug) sug.style.display = 'none';
+        addMsg(text, 'user');
+        setTimeout(() => addMsg(findAnswer(text), 'bot'), 320);
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const trigger  = document.getElementById('chat-trigger');
+        const panel    = document.getElementById('chat-panel');
+        const closeBtn = document.getElementById('chat-close');
+        const input    = document.getElementById('chat-input');
+        const send     = document.getElementById('chat-send');
+        if (!trigger || !panel) return;
+
+        trigger.addEventListener('click', function () {
+            panel.classList.toggle('open');
+            if (panel.classList.contains('open')) input.focus();
+        });
+        closeBtn.addEventListener('click', function () { panel.classList.remove('open'); });
+
+        document.querySelectorAll('.chat-suggestion').forEach(function (btn) {
+            btn.addEventListener('click', function () { handleMessage(btn.textContent); });
+        });
+
+        send.addEventListener('click', function () { handleMessage(input.value); input.value = ''; });
+        input.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') { handleMessage(input.value); input.value = ''; }
+        });
+    });
+})();

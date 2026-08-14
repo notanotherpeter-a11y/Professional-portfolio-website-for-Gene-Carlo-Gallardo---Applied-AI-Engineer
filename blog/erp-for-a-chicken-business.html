@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How I Built a Full ERP for a Filipino Chicken Business in 3 Weeks — Gene Carlo Gallardo</title>
+    <meta name="description" content="From WhatsApp orders and manual inventory counts to a full ERP with POS, payroll, and real-time stock tracking — here's the build story.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        .post-wrap { max-width: 700px; margin: 0 auto; padding: 7rem 2rem 5rem; }
+        .post-back { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem; margin-bottom: 2.5rem; transition: color var(--transition-fast); }
+        .post-back:hover { color: var(--accent-blue); }
+        .post-category { font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent-blue); }
+        .post-title { font-size: clamp(1.6rem, 4vw, 2.25rem); font-weight: 800; color: var(--text-primary); line-height: 1.2; letter-spacing: -0.03em; margin: 0.75rem 0 0.5rem; }
+        .post-meta { font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); display: flex; gap: 1rem; margin-bottom: 2.5rem; padding-bottom: 2rem; border-bottom: 1px solid var(--border); }
+        .post-body { font-size: 1rem; line-height: 1.8; color: var(--text-secondary); }
+        .post-body h2 { font-size: 1.25rem; font-weight: 700; color: var(--text-primary); margin: 2.5rem 0 1rem; letter-spacing: -0.02em; }
+        .post-body p { margin-bottom: 1.25rem; }
+        .post-body ul { margin: 0 0 1.25rem 1.5rem; }
+        .post-body li { margin-bottom: 0.5rem; }
+        .post-body code { font-family: var(--font-mono); font-size: 0.85em; background: var(--bg-tertiary); color: var(--accent-emerald); padding: 0.15em 0.4em; border-radius: 4px; }
+        .post-body .callout { background: var(--bg-secondary); border-left: 3px solid var(--accent-blue); padding: 1rem 1.25rem; border-radius: 0 6px 6px 0; margin: 1.5rem 0; }
+        .post-body .callout p { margin: 0; }
+        .post-footer { margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border); }
+        .post-cta { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-secondary); }
+        .post-cta a { color: var(--accent-blue); }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">Gene Carlo Gallardo</a>
+            <div class="nav-menu">
+                <a href="/#blog" class="nav-link">← Writing</a>
+                <a href="/cv.pdf" class="btn btn-secondary" download>Download CV</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="post-wrap">
+        <a href="/#blog" class="post-back">← Back to Writing</a>
+        <span class="post-category">Case Study</span>
+        <h1 class="post-title">How I Built a Full ERP for a Filipino Chicken Business in 3 Weeks</h1>
+        <div class="post-meta">
+            <span>August 2026</span>
+            <span>·</span>
+            <span>5 min read</span>
+            <span>·</span>
+            <span>Gene Carlo Gallardo</span>
+        </div>
+
+        <div class="post-body">
+            <p>Manok Manifesto is a home-based Filipino grilled chicken (inasal/inihaw) business based in the Philippines. When I took on the project, the owner was tracking orders on paper, managing inventory through memory and WhatsApp messages, and had no way to see how the business was actually performing at a glance.</p>
+
+            <p>Three weeks later, they had a full ERP system live at <code>admin.manokmanifesto.com</code>. Here's exactly how it happened.</p>
+
+            <h2>The Problem With "Good Enough" Tools</h2>
+            <p>The business didn't have a tech problem — it had a visibility problem. Orders came in through Facebook Messenger and WhatsApp. Inventory was restocked based on gut feel. Payroll was calculated manually at the end of each week. Expenses were tracked in a notebook.</p>
+            <p>This works at a small scale. It breaks the moment you try to grow. You can't make good buying decisions if you don't know your actual stock levels. You can't plan staffing if you don't know your busiest days. You can't raise prices confidently if you don't know your real cost base.</p>
+
+            <div class="callout"><p>The goal wasn't to make the business more "tech-forward." The goal was to make it easier to make good decisions.</p></div>
+
+            <h2>Choosing the Stack</h2>
+            <p>For a home-based Philippines business, the stack had to be:</p>
+            <ul>
+                <li><strong>Fast to build</strong> — owner needed this running, not in planning for months</li>
+                <li><strong>Cheap to run</strong> — no monthly server bills, no per-seat SaaS pricing</li>
+                <li><strong>Reliable on mobile</strong> — most access would be via phone, not desktop</li>
+                <li><strong>Real-time</strong> — inventory changes needed to reflect immediately</li>
+            </ul>
+            <p>I went with: <code>Vite + React + Tailwind + shadcn/ui</code> for the frontend, <code>Supabase</code> for the database and auth, and <code>Cloudflare Pages</code> for hosting. Total ongoing cost: essentially zero for this scale.</p>
+
+            <h2>What Was Built</h2>
+            <p>The system shipped with 12 functional modules:</p>
+            <ul>
+                <li><strong>Dashboard</strong> — revenue KPIs, order counts, expense totals at a glance</li>
+                <li><strong>Inventory (Weekly Checklist)</strong> — stock tracking by day with Start/Used/Delivered quantities, auto-carry logic, and low-stock highlighting</li>
+                <li><strong>Orders</strong> — full order management with status flow</li>
+                <li><strong>Expenses</strong> — categorised expense logging with monthly totals</li>
+                <li><strong>Payroll</strong> — staff payroll periods and entries</li>
+                <li><strong>Fund</strong> — cash fund tracking with inline-editable descriptions</li>
+                <li><strong>Sales</strong> — revenue tracking separate from order management</li>
+                <li><strong>Reports</strong> — monthly performance summaries</li>
+                <li><strong>Users</strong> — admin-controlled user creation with role-based access</li>
+                <li><strong>To Do List</strong> — operational task management</li>
+                <li><strong>Settings</strong> — system configuration</li>
+                <li><strong>POS</strong> — point-of-sale for in-person transactions</li>
+            </ul>
+
+            <h2>The Trickiest Part: Inventory Logic</h2>
+            <p>The weekly checklist was the most technically interesting module. Each item tracks three values per day: <strong>S</strong> (Starting stock), <strong>W</strong> (Stock withdrawn/used), and <strong>D</strong> (Stock delivered/received).</p>
+            <p>The auto-carry logic works like this: next day's S = today's S − W + D. If the operator manually overrides an S value, auto-carry resumes from that manual value forward. Cross-week carry pulls from the last recorded day of the previous week. All auto-computed values are displayed in gray italics so the operator knows what's calculated vs. what they entered.</p>
+            <p>This meant only manually-entered Starting values are saved to the database. Auto values are recomputed on load via a <code>computeEffectiveStocks()</code> function — which keeps the data model clean and the DB queries simple.</p>
+
+            <h2>Lessons From the Build</h2>
+            <p><strong>Ship the MVP, then fix the edge cases.</strong> The first version of the inventory system had invisible text in the modal inputs (dark theme CSS was overriding input colors). That got caught and fixed in day two. The business didn't need perfection on day one — they needed something to run on.</p>
+            <p><strong>The contact form matters less than the login screen.</strong> I built a full immersive welcome/login screen with a Higgsfield-generated hero image of their signature lechon manok. The owner's face lit up when they first saw it. Software that feels like yours gets used more.</p>
+            <p><strong>White-label ERP is a product, not a project.</strong> I now have a base ERP template that I can deploy for a new client in 1–2 days with module toggles, custom branding, and a fresh Supabase project. The next Philippine restaurant client costs me much less to build for — and I can price the value, not the hours.</p>
+
+            <h2>The Result</h2>
+            <p>Three weeks from the first conversation to a live system at a custom domain. The owner now has real-time visibility into inventory, a payroll system that doesn't require a calculator, and a dashboard that shows the business's financial health on first login.</p>
+            <p>That's what custom software is for.</p>
+        </div>
+
+        <div class="post-footer">
+            <p class="post-cta">Building something similar? I'm available for new projects. Reach me at <a href="mailto:genecarlogallardo@gmail.com">genecarlogallardo@gmail.com</a> or <a href="tel:+61420418888">0420 418 888</a>.</p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 Gene Carlo Gallardo. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

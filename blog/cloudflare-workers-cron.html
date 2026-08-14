@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloudflare Workers as Your Cron Job — Gene Carlo Gallardo</title>
+    <meta name="description" content="A race condition double-posted my client's LinkedIn content. Two schedulers fired at the same UTC time and both won. Here's the fix — and why CF Workers cron is strictly better.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        .post-wrap { max-width: 700px; margin: 0 auto; padding: 7rem 2rem 5rem; }
+        .post-back { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem; margin-bottom: 2.5rem; transition: color var(--transition-fast); }
+        .post-back:hover { color: var(--accent-blue); }
+        .post-category { font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent-blue); }
+        .post-title { font-size: clamp(1.6rem, 4vw, 2.25rem); font-weight: 800; color: var(--text-primary); line-height: 1.2; letter-spacing: -0.03em; margin: 0.75rem 0 0.5rem; }
+        .post-meta { font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); display: flex; gap: 1rem; margin-bottom: 2.5rem; padding-bottom: 2rem; border-bottom: 1px solid var(--border); }
+        .post-body { font-size: 1rem; line-height: 1.8; color: var(--text-secondary); }
+        .post-body h2 { font-size: 1.25rem; font-weight: 700; color: var(--text-primary); margin: 2.5rem 0 1rem; letter-spacing: -0.02em; }
+        .post-body p { margin-bottom: 1.25rem; }
+        .post-body ul { margin: 0 0 1.25rem 1.5rem; }
+        .post-body li { margin-bottom: 0.5rem; }
+        .post-body code { font-family: var(--font-mono); font-size: 0.85em; background: var(--bg-tertiary); color: var(--accent-emerald); padding: 0.15em 0.4em; border-radius: 4px; }
+        .post-body pre { background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem; overflow-x: auto; margin: 1.5rem 0; }
+        .post-body pre code { background: none; padding: 0; font-size: 0.82rem; line-height: 1.6; color: var(--text-secondary); }
+        .post-body .callout { background: var(--bg-secondary); border-left: 3px solid var(--accent-blue); padding: 1rem 1.25rem; border-radius: 0 6px 6px 0; margin: 1.5rem 0; }
+        .post-body .callout p { margin: 0; }
+        .post-footer { margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border); }
+        .post-cta { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-secondary); }
+        .post-cta a { color: var(--accent-blue); }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">Gene Carlo Gallardo</a>
+            <div class="nav-menu">
+                <a href="/#blog" class="nav-link">← Writing</a>
+                <a href="/cv.pdf" class="btn btn-secondary" download>Download CV</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="post-wrap">
+        <a href="/#blog" class="post-back">← Back to Writing</a>
+        <span class="post-category">Technical</span>
+        <h1 class="post-title">Cloudflare Workers as Your Cron Job: Ditching GitHub Actions for Scheduled Tasks</h1>
+        <div class="post-meta">
+            <span>August 2026</span>
+            <span>·</span>
+            <span>3 min read</span>
+            <span>·</span>
+            <span>Gene Carlo Gallardo</span>
+        </div>
+
+        <div class="post-body">
+            <p>Last week a client's LinkedIn post went out twice. Same content, posted two minutes apart, at 9 AM AEST. The comment section noticed. It wasn't a great look.</p>
+
+            <p>The root cause was a classic race condition: two independent schedulers both reading from the same Supabase table before either one had marked the post as published. Both found the same row, both published it, both marked it done — but the damage was already done.</p>
+
+            <h2>How It Happened</h2>
+            <p>The LinkedIn scheduling system had been built with GitHub Actions as the scheduler — a <code>schedule:</code> trigger firing at <code>0 23 * * *</code> (9 AM AEST). At some point, a Cloudflare Worker was also given a cron for the same time slot.</p>
+
+            <p>GitHub Actions runners queue behind other jobs in the runner pool. They can be delayed by seconds or even minutes. On this day, they both happened to fire within the same execution window, before either had committed the "posted" status back to the database.</p>
+
+            <div class="callout"><p>The read-before-write gap is where race conditions live. If two processes both read the same row as "pending" before either writes "posted", you get double execution.</p></div>
+
+            <h2>The Fix</h2>
+            <p>The solution was simple: make Cloudflare Workers the single source of truth for all scheduling, and remove GitHub Actions schedules entirely.</p>
+
+            <p>In <code>wrangler.toml</code>:</p>
+            <pre><code>[triggers]
+crons = ["0 23 * * *", "0 2 * * *"]
+# 0 23 * * * = 9 AM AEST (UTC+10)
+# 0 2  * * * = 12 PM AEST (UTC+10)</code></pre>
+
+            <p>In <code>.github/workflows/publish.yml</code>:</p>
+            <pre><code>on:
+  workflow_dispatch:  # Manual trigger only — scheduling via CF Worker cron</code></pre>
+
+            <p>GitHub Actions is still there for manual deploys and testing. But it no longer has any scheduled triggers.</p>
+
+            <h2>Why CF Workers Cron Is Strictly Better</h2>
+            <p>This isn't a knock on GitHub Actions — it's excellent for CI/CD. But for scheduled API tasks, CF Workers has structural advantages:</p>
+
+            <ul>
+                <li><strong>No runner queue.</strong> GitHub Actions scheduled jobs queue behind other runners in the pool. Under load, your 9 AM job might run at 9:04 or 9:11. CF Worker cron fires directly in their infrastructure — millisecond-level precision.</li>
+                <li><strong>No cold start penalty for your code.</strong> Workers use V8 isolates, not containers. Startup is microseconds, not seconds.</li>
+                <li><strong>Direct API access.</strong> The Worker already has your secrets (LinkedIn token, Supabase URL). No environment variable pipeline to manage in a YAML file.</li>
+                <li><strong>One system to reason about.</strong> When something goes wrong, you check the Worker logs. Not the Actions logs, not the runner logs, not the secret sync between both.</li>
+                <li><strong>Free tier covers most scheduling use cases.</strong> 100,000 requests/day, cron included.</li>
+            </ul>
+
+            <h2>The Remaining Risk</h2>
+            <p>Consolidating to a single scheduler eliminates the race condition between two systems. But if your Worker itself gets invoked twice simultaneously (unlikely but not impossible in edge cases), you still need database-level protection.</p>
+
+            <p>The real fix for that is an atomic update — instead of:</p>
+            <pre><code>// 1. SELECT where status = 'pending'
+// 2. POST to LinkedIn
+// 3. UPDATE status = 'posted'  ← gap lives here</code></pre>
+
+            <p>Use a conditional update:</p>
+            <pre><code>// UPDATE posts SET status = 'posted'
+// WHERE id = $id AND status = 'pending'
+// RETURNING id
+// → only proceeds if this process "won" the update</code></pre>
+
+            <p>If the update returns no rows, another process already claimed it. Skip the API call. This makes the operation idempotent regardless of how many times it fires.</p>
+
+            <h2>Takeaway</h2>
+            <p>For scheduled tasks that call external APIs: use Cloudflare Workers cron, not GitHub Actions schedule. Use your database as the lock. And always verify your scheduler count before shipping — two is one too many.</p>
+        </div>
+
+        <div class="post-footer">
+            <p class="post-cta">Building automation systems? I do this for clients across Australia and the Philippines. Reach me at <a href="mailto:genecarlogallardo@gmail.com">genecarlogallardo@gmail.com</a>.</p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 Gene Carlo Gallardo. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

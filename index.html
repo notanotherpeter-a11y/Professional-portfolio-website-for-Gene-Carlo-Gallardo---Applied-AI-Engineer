@@ -59,6 +59,7 @@
                 <a href="#skills" class="nav-link">Skills</a>
                 <a href="#projects" class="nav-link">Projects</a>
                 <a href="#experience" class="nav-link">Experience</a>
+                <a href="#blog" class="nav-link">Writing</a>
                 <a href="#contact" class="nav-link">Contact</a>
                 <a href="/cv.pdf" class="btn btn-secondary" download>Download CV</a>
             </div>
@@ -547,6 +548,37 @@
         </div>
     </section>
 
+    <!-- Blog Section -->
+    <section class="blog" id="blog">
+        <div class="container">
+            <h2 class="section-heading"><span class="section-num">[ 08 ]</span> Notes &amp; Writing</h2>
+            <p class="blog-intro">Thoughts on AI, automation, and building things that actually work.</p>
+            <div class="blog-grid">
+                <a href="/blog/erp-for-a-chicken-business.html" class="blog-card">
+                    <span class="blog-category">Case Study</span>
+                    <h3 class="blog-title">How I Built a Full ERP for a Filipino Chicken Business in 3 Weeks</h3>
+                    <p class="blog-excerpt">From WhatsApp orders and manual inventory counts to a full ERP with POS, payroll, and real-time stock tracking — here's the build story.</p>
+                    <div class="blog-meta"><span>Aug 2026</span><span>·</span><span>5 min read</span></div>
+                    <span class="blog-read-more">Read Post →</span>
+                </a>
+                <a href="/blog/custom-software-roi.html" class="blog-card">
+                    <span class="blog-category">Insights</span>
+                    <h3 class="blog-title">The Real ROI of Custom Software for Small Businesses</h3>
+                    <p class="blog-excerpt">Off-the-shelf tools promise everything and deliver friction. Here's why the SMBs I work with choose custom-built systems — and what it actually costs vs. the alternative.</p>
+                    <div class="blog-meta"><span>Aug 2026</span><span>·</span><span>4 min read</span></div>
+                    <span class="blog-read-more">Read Post →</span>
+                </a>
+                <a href="/blog/cloudflare-workers-cron.html" class="blog-card">
+                    <span class="blog-category">Technical</span>
+                    <h3 class="blog-title">Cloudflare Workers as Your Cron Job: Ditching GitHub Actions for Scheduled Tasks</h3>
+                    <p class="blog-excerpt">A race condition double-posted my client's LinkedIn content. Two schedulers fired at the same UTC time and both won. Here's the fix — and why CF Workers cron is strictly better.</p>
+                    <div class="blog-meta"><span>Aug 2026</span><span>·</span><span>3 min read</span></div>
+                    <span class="blog-read-more">Read Post →</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
     <!-- Contact Section -->
     <section class="contact" id="contact">
         <div class="container">
@@ -620,6 +652,35 @@
                 <!-- Project content will be inserted here -->
             </div>
         </div>
+    </div>
+
+    <!-- Chat Widget -->
+    <div class="chat-widget" id="chat-widget" aria-label="Chat with Gene Carlo's assistant">
+        <div class="chat-panel" id="chat-panel" role="dialog" aria-label="FAQ chat">
+            <div class="chat-header">
+                <div class="chat-header-info">
+                    <div class="chat-avatar">GC</div>
+                    <div>
+                        <div class="chat-header-name">Gene Carlo</div>
+                        <div class="chat-header-status">● Available</div>
+                    </div>
+                </div>
+                <button class="chat-close" id="chat-close" aria-label="Close chat">✕</button>
+            </div>
+            <div class="chat-messages" id="chat-messages">
+                <div class="chat-msg bot">Hey! I'm a bot version of Gene Carlo 👋 Ask me anything about his work, projects, or how to get in touch.</div>
+            </div>
+            <div class="chat-suggestions" id="chat-suggestions">
+                <button class="chat-suggestion">What have you built?</button>
+                <button class="chat-suggestion">What do you charge?</button>
+                <button class="chat-suggestion">Are you available for work?</button>
+            </div>
+            <div class="chat-input-row">
+                <input class="chat-input" id="chat-input" type="text" placeholder="Ask me anything…" autocomplete="off">
+                <button class="chat-send" id="chat-send" aria-label="Send">➤</button>
+            </div>
+        </div>
+        <button class="chat-trigger" id="chat-trigger" aria-label="Open chat">💬</button>
     </div>
 
     <script src="script.js"></script>
