@@ -885,7 +885,7 @@ window.addEventListener('scroll', throttledScrollHandler);
     const FAQ = [
         {
             triggers: ['who are you', 'about yourself', 'introduce', 'tell me about you'],
-            answer: "I'm Gene Carlo Gallardo — Applied AI Engineer and Systems Developer based in Melbourne, VIC, Australia. I run Syntyx Labs Pty Ltd and build AI-powered business systems for SMBs across Australia and the Philippines: ERPs, CRMs, automation pipelines, animated websites, and custom software that replaces manual work."
+            answer: "I'm Gene Carlo Gallardo — Applied AI Engineer and Systems Developer based in Melbourne, VIC, Australia. I run Syntyx Labs Pty Ltd and build AI-powered business systems for clients across Australia: ERPs, CRMs, automation pipelines, animated websites, and custom software that replaces manual work."
         },
         {
             triggers: ['what do you do', 'services', 'what can you build', 'what do you offer', 'help me with'],
@@ -901,7 +901,7 @@ window.addEventListener('scroll', throttledScrollHandler);
         },
         {
             triggers: ['available', 'hire', 'work with', 'take on', 'freelance', 'open to'],
-            answer: "Yes — currently open to new projects. I work with businesses in Australia and the Philippines, remote-first. Best first step: email genecarlogallardo@gmail.com with a quick description of what you need and I'll get back to you within 24 hours."
+            answer: "Yes — currently open to new projects. I've got clients across Australia and work remote-first. Best first step: email genecarlogallardo@gmail.com with a quick description of what you need and I'll get back to you within 24 hours."
         },
         {
             triggers: ['contact', 'reach you', 'get in touch', 'email', 'phone', 'call', 'whatsapp'],
@@ -917,7 +917,7 @@ window.addEventListener('scroll', throttledScrollHandler);
         },
         {
             triggers: ['location', 'melbourne', 'remote', 'where', 'australia', 'philippines'],
-            answer: "Based in Melbourne, VIC, Australia. Work with clients across Australia and the Philippines. Remote-first — happy to meet in person if you're in Melbourne."
+            answer: "Based in Melbourne, VIC, Australia. I've got clients across Australia — remote-first, happy to meet in person if you're in Melbourne."
         },
         {
             triggers: ['company', 'business name', 'syntyx', 'abn', 'registered'],
