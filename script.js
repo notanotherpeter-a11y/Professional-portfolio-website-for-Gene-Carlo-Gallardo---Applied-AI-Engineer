@@ -909,7 +909,7 @@ window.addEventListener('scroll', throttledScrollHandler);
         },
         {
             triggers: ['experience', 'background', 'history', 'cv', 'resume', 'worked at'],
-            answer: "Currently a Sales Engineer at Direct Warehouse Solutions (3PL logistics, Melbourne). Self-taught developer with a background in operations management. Running Syntyx Labs Pty Ltd — building software for clients across F&B, logistics, and real estate since 2024.\n\nDownload my CV from the nav above for the full picture."
+            answer: "Business development contractor and Applied AI Engineer based in Melbourne. Running Syntyx Labs Pty Ltd — building software for clients across F&B, logistics, and real estate since 2024.\n\nDownload my CV from the nav above for the full picture."
         },
         {
             triggers: ['tech', 'stack', 'technologies', 'tools', 'languages', 'framework'],
