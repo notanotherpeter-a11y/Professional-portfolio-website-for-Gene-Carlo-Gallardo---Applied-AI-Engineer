@@ -889,11 +889,11 @@ window.addEventListener('scroll', throttledScrollHandler);
         },
         {
             triggers: ['what do you do', 'services', 'what can you build', 'what do you offer', 'help me with'],
-            answer: "I build custom business systems: ERP/management dashboards, AI automation pipelines, booking bots, data scrapers, and full-stack web apps. My sweet spot is turning messy manual processes — spreadsheets, WhatsApp groups — into clean working software."
+            answer: "I build custom business systems: ERP/management dashboards, CRM systems, auto quote software, animated websites, AI automation pipelines, booking bots, and full-stack web apps. My sweet spot is turning messy manual processes — spreadsheets, WhatsApp groups — into clean working software."
         },
         {
             triggers: ['what have you built', 'projects', 'portfolio', 'work examples', 'show me'],
-            answer: "Recent builds:\n• Manok Manifesto ERP — inventory, POS, payroll for an F&B business\n• Restaurant commissary management system with multi-branch inventory\n• Restaurant ERP with QR ordering + kitchen display system\n• AI tradie booking bot for Australian tradies\n• LinkedIn automation system for a logistics client"
+            answer: "Recent builds:\n• Manok Manifesto ERP — inventory, POS, payroll for an F&B business\n• Restaurant commissary management system with multi-branch inventory\n• Restaurant ERP with QR ordering + kitchen display system\n• Animated portfolio + landing websites (Three.js, WebGL, scroll effects)\n• Auto quote software — instant pricing calculator for service businesses\n• CRM systems — pipeline tracking, follow-up automation, outreach dashboards\n• AI tradie booking bot for Australian tradies\n• LinkedIn automation system for a logistics client"
         },
         {
             triggers: ['how much', 'price', 'cost', 'pricing', 'rates', 'charge', 'quote'],
