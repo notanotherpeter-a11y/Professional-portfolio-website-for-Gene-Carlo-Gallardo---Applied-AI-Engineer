@@ -885,43 +885,55 @@ window.addEventListener('scroll', throttledScrollHandler);
     const FAQ = [
         {
             triggers: ['who are you', 'about yourself', 'introduce', 'tell me about you'],
-            answer: "I'm Gene Carlo Gallardo — Applied AI Engineer and Systems Developer based in Melbourne. I build AI-powered business systems: ERPs, automation pipelines, booking bots, and custom software for SMBs in Australia and the Philippines."
+            answer: "I'm Gene Carlo Gallardo — Applied AI Engineer and Systems Developer based in Melbourne, VIC, Australia. I run Syntyx Labs Pty Ltd and build AI-powered business systems for SMBs across Australia and the Philippines: ERPs, CRMs, automation pipelines, animated websites, and custom software that replaces manual work."
         },
         {
             triggers: ['what do you do', 'services', 'what can you build', 'what do you offer', 'help me with'],
-            answer: "I build custom business systems: ERP/management dashboards, CRM systems, auto quote software, animated websites, AI automation pipelines, booking bots, and full-stack web apps. My sweet spot is turning messy manual processes — spreadsheets, WhatsApp groups — into clean working software."
+            answer: "I build custom business systems:\n• ERP / management dashboards\n• CRM + outreach automation\n• Auto quote & pricing software\n• Animated websites (WebGL, Three.js, scroll effects)\n• AI booking bots & chatbots\n• LinkedIn & email outreach automation\n• Full-stack web apps (React + Supabase + Cloudflare)\n\nMy sweet spot: turning messy manual processes — spreadsheets, WhatsApp groups, paper forms — into clean, automated software."
         },
         {
             triggers: ['what have you built', 'projects', 'portfolio', 'work examples', 'show me'],
-            answer: "Recent builds:\n• Manok Manifesto ERP — inventory, POS, payroll for an F&B business\n• Restaurant commissary management system with multi-branch inventory\n• Restaurant ERP with QR ordering + kitchen display system\n• Animated portfolio + landing websites (Three.js, WebGL, scroll effects)\n• Auto quote software — instant pricing calculator for service businesses\n• CRM systems — pipeline tracking, follow-up automation, outreach dashboards\n• AI tradie booking bot for Australian tradies\n• LinkedIn automation system for a logistics client"
+            answer: "Recent builds:\n• Manok Manifesto ERP — inventory, POS, payroll for an F&B business\n• Restaurant commissary management system with multi-branch inventory\n• Restaurant ERP with QR ordering + kitchen display system\n• Animated portfolio + landing websites (Three.js, WebGL, scroll effects)\n• Auto quote software — instant pricing calculator for service businesses\n• CRM + outreach dashboard for a 3PL warehousing company (2,800+ prospects)\n• AI tradie booking bot for Australian tradies\n• LinkedIn + email automation system for a logistics client\n• Daily AI-written blog pipeline with SEO/GEO optimisation"
         },
         {
             triggers: ['how much', 'price', 'cost', 'pricing', 'rates', 'charge', 'quote'],
-            answer: "Custom ERP systems: from $5–8K AUD setup + $300/mo\nWebsites + AI booking bots: from $3,500 setup + $700/mo\n\nHappy to scope your project — reach me at genecarlogallardo@gmail.com or 0420 418 888."
+            answer: "Typical ranges (AUD):\n• Custom ERP systems: from $5–8K setup + $300/mo maintenance\n• Websites + animated landing pages: from $3,500 setup\n• AI booking bots + chatbots: from $3,500 setup + $700/mo\n• CRM + outreach automation: from $4K setup\n• Auto quote software: from $2,500 setup\n\nEvery project is scoped individually. Email genecarlogallardo@gmail.com or call 0420 418 888 for a free consult."
         },
         {
             triggers: ['available', 'hire', 'work with', 'take on', 'freelance', 'open to'],
-            answer: "Yes, available for new projects. I work with businesses in Australia and the Philippines. Best first step: email genecarlogallardo@gmail.com with a quick description of what you need."
+            answer: "Yes — currently open to new projects. I work with businesses in Australia and the Philippines, remote-first. Best first step: email genecarlogallardo@gmail.com with a quick description of what you need and I'll get back to you within 24 hours."
         },
         {
-            triggers: ['contact', 'reach you', 'get in touch', 'email', 'phone', 'call'],
-            answer: "📧 genecarlogallardo@gmail.com\n📞 0420 418 888\n💼 linkedin.com/in/gene-carlo-gallardo\n\nOr scroll to the contact form below!"
+            triggers: ['contact', 'reach you', 'get in touch', 'email', 'phone', 'call', 'whatsapp'],
+            answer: "📧 genecarlogallardo@gmail.com\n📞 0420 418 888\n💬 WhatsApp: 0420 418 888\n💼 linkedin.com/in/gene-carlo-gallardo\n\nOr scroll to the contact form below — I reply within 24 hours."
         },
         {
             triggers: ['experience', 'background', 'history', 'cv', 'resume', 'worked at'],
-            answer: "Currently at Direct Warehouse Solutions as a Sales Engineer. Self-taught developer with a background in operations management. I've been building software for clients across F&B, logistics, and real estate since 2024. Download my CV from the nav above for the full picture."
+            answer: "Currently a Sales Engineer at Direct Warehouse Solutions (3PL logistics, Melbourne). Self-taught developer with a background in operations management. Running Syntyx Labs Pty Ltd — building software for clients across F&B, logistics, and real estate since 2024.\n\nDownload my CV from the nav above for the full picture."
         },
         {
             triggers: ['tech', 'stack', 'technologies', 'tools', 'languages', 'framework'],
-            answer: "Primary stack:\n• React + Vite + Tailwind + shadcn/ui\n• Supabase (database + auth)\n• Cloudflare Workers + Hono (APIs + cron)\n• Python (automation, scraping, AI pipelines)\n• Claude AI SDK, Playwright, Three.js"
+            answer: "Primary stack:\n• React + Vite + Tailwind + shadcn/ui (frontend)\n• Supabase (database + auth)\n• Cloudflare Workers + Hono (APIs + cron jobs)\n• Python (automation, scraping, AI pipelines)\n• Claude AI SDK + LangChain + n8n (AI & workflow automation)\n• Three.js + WebGL (animated / 3D websites)\n• Playwright (browser automation)\n• GitHub Pages + Vercel + Cloudflare Pages (deployment)"
         },
         {
             triggers: ['location', 'melbourne', 'remote', 'where', 'australia', 'philippines'],
-            answer: "Based in Melbourne, VIC, Australia. Work with clients across Australia and the Philippines. Remote-first — happy to meet in Melbourne if you're local."
+            answer: "Based in Melbourne, VIC, Australia. Work with clients across Australia and the Philippines. Remote-first — happy to meet in person if you're in Melbourne."
+        },
+        {
+            triggers: ['company', 'business name', 'syntyx', 'abn', 'registered'],
+            answer: "Gene Carlo operates under Syntyx Labs Pty Ltd — an Australian registered business (ABN: 18 681 990 692) based in Melbourne, VIC. We build AI-powered software systems for SMBs."
+        },
+        {
+            triggers: ['industries', 'clients', 'who do you work with', 'what industry', 'niche'],
+            answer: "Industries I've built for:\n• Food & beverage (ERPs, POS, kitchen display systems)\n• Logistics & warehousing (CRM, outreach automation)\n• Hospitality (booking bots, management systems)\n• Real estate (lead automation)\n• Trades & services (booking bots, auto quote tools)\n• Professional services (portfolios, LinkedIn automation)\n\nIf your business has repetitive manual work, I can automate it."
+        },
+        {
+            triggers: ['ai', 'artificial intelligence', 'automation', 'chatbot', 'bot'],
+            answer: "AI is the core of what I build. Current specialisations:\n• AI chatbots + booking bots (Claude AI SDK)\n• Automated email + LinkedIn outreach sequences\n• AI-generated content pipelines (daily blog posts, social content)\n• LLM-powered data extraction and lead research\n• Workflow automation (n8n, Cloudflare Workers, Python)\n\nAll built on the latest models — Claude 3.5/3.7, GPT-4, and open-source alternatives."
         },
         {
             triggers: ['blog', 'writing', 'posts', 'articles', 'notes'],
-            answer: "Check out the Notes & Writing section on this page — I've written about building ERPs, the ROI of custom software, and using Cloudflare Workers for cron jobs. More posts coming soon!"
+            answer: "Check out the Notes & Writing section on this page — articles on building ERPs, the ROI of custom software, Cloudflare Workers for automation, and AI workflows for Australian SMBs. New posts published regularly!"
         }
     ];
 
