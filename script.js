@@ -893,7 +893,7 @@ window.addEventListener('scroll', throttledScrollHandler);
         },
         {
             triggers: ['what have you built', 'projects', 'portfolio', 'work examples', 'show me'],
-            answer: "Recent builds:\n• Manok Manifesto ERP — inventory, POS, payroll for an F&B business\n• Kamayan commissary management system (kamayanresto.com)\n• Kamayan sa Taytay restaurant ERP with QR ordering + kitchen display\n• AI tradie booking bot for Australian tradies\n• LinkedIn automation system for a logistics client"
+            answer: "Recent builds:\n• Manok Manifesto ERP — inventory, POS, payroll for an F&B business\n• Restaurant commissary management system with multi-branch inventory\n• Restaurant ERP with QR ordering + kitchen display system\n• AI tradie booking bot for Australian tradies\n• LinkedIn automation system for a logistics client"
         },
         {
             triggers: ['how much', 'price', 'cost', 'pricing', 'rates', 'charge', 'quote'],
