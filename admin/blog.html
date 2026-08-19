@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog Admin — gene-carlo.com</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --bg-card: #111118;
+      --bg-elevated: #16161f;
+      --border: rgba(255,255,255,0.08);
+      --text: #f1f5f9;
+      --text-muted: #64748b;
+      --text-secondary: #94a3b8;
+      --accent: #3b82f6;
+      --green: #22c55e;
+      --yellow: #f59e0b;
+      --red: #ef4444;
+      --purple: #a855f7;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Geist', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    /* Layout */
+    .layout { display: grid; grid-template-columns: 220px 1fr; min-height: 100vh; }
+
+    /* Sidebar */
+    .sidebar {
+      background: var(--bg-card);
+      border-right: 1px solid var(--border);
+      padding: 1.5rem 1rem;
+      position: sticky; top: 0; height: 100vh;
+      display: flex; flex-direction: column; gap: 0.25rem;
+    }
+    .sidebar-logo {
+      font-family: 'Geist Mono', monospace; font-size: 0.7rem;
+      text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-muted);
+      padding: 0 0.5rem 1.5rem; border-bottom: 1px solid var(--border); margin-bottom: 1rem;
+    }
+    .sidebar-logo span { color: var(--accent); }
+    .nav-item {
+      display: flex; align-items: center; gap: 0.75rem; padding: 0.6rem 0.75rem;
+      border-radius: 8px; font-size: 0.875rem; cursor: pointer; color: var(--text-secondary);
+      text-decoration: none; transition: all 0.15s;
+    }
+    .nav-item:hover, .nav-item.active { background: rgba(59,130,246,0.1); color: var(--text); }
+    .nav-item.active { color: var(--accent); }
+    .nav-icon { font-size: 1rem; width: 20px; text-align: center; }
+    .sidebar-section-label {
+      font-family: 'Geist Mono', monospace; font-size: 0.65rem;
+      text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-muted);
+      padding: 1rem 0.75rem 0.25rem;
+    }
+    .sidebar-bottom { margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--border); }
+    .sidebar-bottom a { font-size: 0.8rem; color: var(--text-muted); text-decoration: none; display: block; padding: 0.4rem 0.75rem; }
+    .sidebar-bottom a:hover { color: var(--accent); }
+
+    /* Main */
+    .main { padding: 2rem 2.5rem; overflow-y: auto; }
+    .page-header { margin-bottom: 2rem; }
+    .page-title { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 0.25rem; }
+    .page-subtitle { font-family: 'Geist Mono', monospace; font-size: 0.75rem; color: var(--text-muted); }
+
+    /* KPI cards */
+    .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem; }
+    .kpi-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; }
+    .kpi-label { font-family: 'Geist Mono', monospace; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 0.5rem; }
+    .kpi-value { font-size: 2rem; font-weight: 800; letter-spacing: -0.04em; }
+    .kpi-sub { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem; }
+    .kpi-card.green .kpi-value { color: var(--green); }
+    .kpi-card.yellow .kpi-value { color: var(--yellow); }
+    .kpi-card.red .kpi-value { color: var(--red); }
+    .kpi-card.blue .kpi-value { color: var(--accent); }
+
+    /* Calendar */
+    .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+    .section-title { font-size: 1rem; font-weight: 700; }
+    .btn { font-family: 'Geist Mono', monospace; font-size: 0.75rem; padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-elevated); color: var(--text); cursor: pointer; text-transform: uppercase; letter-spacing: 0.05em; transition: all 0.15s; text-decoration: none; }
+    .btn:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-primary { background: var(--accent); border-color: var(--accent); color: white; }
+    .btn-primary:hover { opacity: 0.85; color: white; }
+
+    /* Calendar grid */
+    .calendar { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 2rem; }
+    .calendar-nav { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); }
+    .calendar-month { font-weight: 700; font-size: 1rem; }
+    .calendar-nav-btn { background: none; border: 1px solid var(--border); color: var(--text); padding: 0.3rem 0.75rem; border-radius: 6px; cursor: pointer; font-size: 0.875rem; }
+    .calendar-nav-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); }
+    .calendar-day-header { font-family: 'Geist Mono', monospace; font-size: 0.65rem; text-transform: uppercase; color: var(--text-muted); text-align: center; padding: 0.75rem 0.25rem; border-bottom: 1px solid var(--border); letter-spacing: 0.05em; }
+    .calendar-cell { min-height: 80px; padding: 0.5rem; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); position: relative; }
+    .calendar-cell:nth-child(7n) { border-right: none; }
+    .calendar-cell.other-month { opacity: 0.3; }
+    .calendar-cell.today { background: rgba(59,130,246,0.05); }
+    .day-num { font-family: 'Geist Mono', monospace; font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.25rem; }
+    .calendar-cell.today .day-num { color: var(--accent); font-weight: 700; }
+    .cal-post { font-size: 0.65rem; background: rgba(34,197,94,0.15); border-left: 2px solid var(--green); color: #86efac; padding: 0.2rem 0.4rem; border-radius: 3px; margin-bottom: 0.2rem; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; cursor: pointer; }
+    .cal-post.scheduled { background: rgba(245,158,11,0.15); border-color: var(--yellow); color: #fcd34d; }
+    .cal-post.failed { background: rgba(239,68,68,0.15); border-color: var(--red); color: #fca5a5; }
+
+    /* Posts table */
+    .posts-table { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    table { width: 100%; border-collapse: collapse; }
+    th { font-family: 'Geist Mono', monospace; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid var(--border); background: var(--bg-elevated); }
+    td { padding: 0.875rem 1rem; border-bottom: 1px solid var(--border); font-size: 0.875rem; vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,0.02); }
+    .post-title-cell { font-weight: 600; max-width: 280px; }
+    .post-title-link { color: var(--text); text-decoration: none; }
+    .post-title-link:hover { color: var(--accent); }
+    .post-excerpt-small { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 260px; }
+    .badge { display: inline-flex; align-items: center; gap: 0.3rem; font-family: 'Geist Mono', monospace; font-size: 0.65rem; padding: 0.2rem 0.6rem; border-radius: 4px; font-weight: 500; }
+    .badge.published { background: rgba(34,197,94,0.15); color: #86efac; }
+    .badge.scheduled { background: rgba(245,158,11,0.15); color: #fcd34d; }
+    .badge.failed { background: rgba(239,68,68,0.15); color: #fca5a5; }
+    .badge.draft { background: rgba(100,116,139,0.2); color: var(--text-muted); }
+    .category-badge { font-size: 0.7rem; color: var(--text-muted); }
+    .date-cell { font-family: 'Geist Mono', monospace; font-size: 0.75rem; color: var(--text-muted); white-space: nowrap; }
+    .action-link { font-family: 'Geist Mono', monospace; font-size: 0.7rem; color: var(--accent); text-decoration: none; }
+    .action-link:hover { opacity: 0.7; }
+
+    /* Loading */
+    .loading { text-align: center; padding: 3rem; color: var(--text-muted); font-family: 'Geist Mono', monospace; font-size: 0.8rem; }
+    .dot-pulse::after { content: '...'; animation: dots 1.5s infinite; }
+    @keyframes dots { 0%,20% { content: '.'; } 40%,60% { content: '..'; } 80%,100% { content: '...'; } }
+  </style>
+</head>
+<body>
+<div class="layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">GC / <span>Blog Admin</span></div>
+    <a class="nav-item active" href="blog.html"><span class="nav-icon">📝</span> Blog Posts</a>
+    <a class="nav-item" href="../index.html#writing" target="_blank"><span class="nav-icon">🌐</span> View Live Blog</a>
+    <div class="sidebar-section-label">Quick Actions</div>
+    <a class="nav-item" href="#" onclick="triggerGenerate()"><span class="nav-icon">⚡</span> Generate Now</a>
+    <a class="nav-item" href="#" onclick="refreshData()"><span class="nav-icon">🔄</span> Refresh Data</a>
+    <div class="sidebar-bottom">
+      <a href="../index.html">← Back to site</a>
+      <a href="https://gene-carlo.com" target="_blank">gene-carlo.com ↗</a>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <main class="main">
+    <div class="page-header">
+      <h1 class="page-title">Blog Dashboard</h1>
+      <p class="page-subtitle">Automated daily posts · gene-carlo.com/blog</p>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="kpi-grid">
+      <div class="kpi-card green">
+        <div class="kpi-label">Published</div>
+        <div class="kpi-value" id="kpi-published">—</div>
+        <div class="kpi-sub">All time</div>
+      </div>
+      <div class="kpi-card yellow">
+        <div class="kpi-label">Scheduled</div>
+        <div class="kpi-value" id="kpi-scheduled">—</div>
+        <div class="kpi-sub">Upcoming</div>
+      </div>
+      <div class="kpi-card red">
+        <div class="kpi-label">Failed</div>
+        <div class="kpi-value" id="kpi-failed">—</div>
+        <div class="kpi-sub">Needs attention</div>
+      </div>
+      <div class="kpi-card blue">
+        <div class="kpi-label">This Month</div>
+        <div class="kpi-value" id="kpi-month">—</div>
+        <div class="kpi-sub" id="kpi-month-label">Posts published</div>
+      </div>
+    </div>
+
+    <!-- Calendar -->
+    <div class="section-header">
+      <h2 class="section-title">Publishing Calendar</h2>
+      <div style="display:flex;gap:0.5rem;">
+        <button class="calendar-nav-btn" onclick="prevMonth()">‹</button>
+        <button class="calendar-nav-btn" onclick="nextMonth()">›</button>
+      </div>
+    </div>
+    <div class="calendar">
+      <div class="calendar-nav">
+        <span class="calendar-month" id="cal-month-label">—</span>
+        <span style="font-family:'Geist Mono',monospace;font-size:0.7rem;color:var(--text-muted)">
+          <span class="badge published" style="margin-right:0.5rem">● Published</span>
+          <span class="badge scheduled">● Scheduled</span>
+          <span class="badge failed" style="margin-left:0.5rem">● Failed</span>
+        </span>
+      </div>
+      <div class="calendar-grid" id="cal-days-header"></div>
+      <div class="calendar-grid" id="cal-grid"></div>
+    </div>
+
+    <!-- Posts table -->
+    <div class="section-header">
+      <h2 class="section-title">All Posts</h2>
+      <a href="https://gene-carlo.com/blog/" class="btn" target="_blank">View Live →</a>
+    </div>
+    <div class="posts-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Category</th>
+            <th>Status</th>
+            <th>Scheduled</th>
+            <th>Published</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="posts-tbody">
+          <tr><td colspan="6" class="loading"><span class="dot-pulse">Loading posts</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://iyciembxuanyrsorvlgc.supabase.co';
+const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml5Y2llbWJ4dWFueXJzb3J2bGdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY0Mzc3ODAsImV4cCI6MjEwMjAxMzc4MH0.B6ZJb4UmRNJClh2-mbUd0eeP1ROfnAggzbAycXiFTys';
+
+let allPosts = [];
+let calYear = new Date().getFullYear();
+let calMonth = new Date().getMonth();
+
+async function fetchPosts() {
+  const res = await fetch(
+    `${SUPABASE_URL}/rest/v1/blog_posts?select=*&order=created_at.desc&limit=200`,
+    { headers: { 'apikey': ANON_KEY, 'Authorization': `Bearer ${ANON_KEY}` } }
+  );
+  return await res.json();
+}
+
+function updateKPIs(posts) {
+  const published = posts.filter(p => p.status === 'published').length;
+  const scheduled = posts.filter(p => p.status === 'scheduled').length;
+  const failed = posts.filter(p => p.status === 'failed').length;
+  const now = new Date();
+  const monthPosts = posts.filter(p => {
+    if (!p.published_at) return false;
+    const d = new Date(p.published_at);
+    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+  }).length;
+  document.getElementById('kpi-published').textContent = published;
+  document.getElementById('kpi-scheduled').textContent = scheduled;
+  document.getElementById('kpi-failed').textContent = failed;
+  document.getElementById('kpi-month').textContent = monthPosts;
+  const monthName = now.toLocaleString('default', { month: 'long' });
+  document.getElementById('kpi-month-label').textContent = `Posts in ${monthName}`;
+}
+
+function renderCalendar(posts) {
+  const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('cal-month-label').textContent = `${monthNames[calMonth]} ${calYear}`;
+
+  const header = document.getElementById('cal-days-header');
+  header.innerHTML = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(d =>
+    `<div class="calendar-day-header">${d}</div>`).join('');
+
+  const grid = document.getElementById('cal-grid');
+  const firstDay = new Date(calYear, calMonth, 1);
+  const lastDay = new Date(calYear, calMonth + 1, 0);
+  let startDow = firstDay.getDay(); // 0=Sun
+  startDow = startDow === 0 ? 6 : startDow - 1; // Mon=0
+
+  const postsByDate = {};
+  posts.forEach(p => {
+    const dateStr = (p.published_at || p.scheduled_date || '').substring(0, 10);
+    if (!postsByDate[dateStr]) postsByDate[dateStr] = [];
+    postsByDate[dateStr].push(p);
+  });
+
+  let cells = '';
+  const today = new Date();
+  const todayStr = today.toISOString().substring(0, 10);
+
+  // Prev month padding
+  for (let i = 0; i < startDow; i++) {
+    const d = new Date(calYear, calMonth, -startDow + i + 1);
+    cells += `<div class="calendar-cell other-month"><div class="day-num">${d.getDate()}</div></div>`;
+  }
+
+  for (let d = 1; d <= lastDay.getDate(); d++) {
+    const dateStr = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isToday = dateStr === todayStr;
+    const dayPosts = postsByDate[dateStr] || [];
+    const postsHtml = dayPosts.map(p =>
+      `<div class="cal-post ${p.status}" title="${p.title}" onclick="window.open('https://gene-carlo.com/blog/${p.slug}.html','_blank')">${p.title.substring(0,30)}…</div>`
+    ).join('');
+    cells += `<div class="calendar-cell${isToday ? ' today' : ''}"><div class="day-num">${d}</div>${postsHtml}</div>`;
+  }
+
+  // Next month padding
+  const totalCells = startDow + lastDay.getDate();
+  const remaining = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
+  for (let i = 1; i <= remaining; i++) {
+    cells += `<div class="calendar-cell other-month"><div class="day-num">${i}</div></div>`;
+  }
+
+  grid.innerHTML = cells;
+}
+
+function renderTable(posts) {
+  const tbody = document.getElementById('posts-tbody');
+  if (!posts.length) {
+    tbody.innerHTML = '<tr><td colspan="6" class="loading">No posts yet — first post will be generated at 10am today</td></tr>';
+    return;
+  }
+  tbody.innerHTML = posts.map(p => {
+    const schDate = p.scheduled_date || '—';
+    const pubDate = p.published_at ? new Date(p.published_at).toLocaleDateString('en-AU', {day:'numeric',month:'short',year:'numeric'}) : '—';
+    const liveUrl = `https://gene-carlo.com/blog/${p.slug}.html`;
+    return `<tr>
+      <td class="post-title-cell">
+        <a href="${liveUrl}" target="_blank" class="post-title-link">${p.title}</a>
+        <div class="post-excerpt-small">${p.excerpt || ''}</div>
+      </td>
+      <td class="category-badge">${p.category || '—'}</td>
+      <td><span class="badge ${p.status}">${p.status}</span></td>
+      <td class="date-cell">${schDate}</td>
+      <td class="date-cell">${pubDate}</td>
+      <td><a href="${liveUrl}" target="_blank" class="action-link">View →</a></td>
+    </tr>`;
+  }).join('');
+}
+
+async function refreshData() {
+  document.getElementById('posts-tbody').innerHTML = '<tr><td colspan="6" class="loading"><span class="dot-pulse">Loading</span></td></tr>';
+  allPosts = await fetchPosts();
+  updateKPIs(allPosts);
+  renderCalendar(allPosts);
+  renderTable(allPosts);
+}
+
+function prevMonth() {
+  calMonth--;
+  if (calMonth < 0) { calMonth = 11; calYear--; }
+  renderCalendar(allPosts);
+}
+function nextMonth() {
+  calMonth++;
+  if (calMonth > 11) { calMonth = 0; calYear++; }
+  renderCalendar(allPosts);
+}
+
+function triggerGenerate() {
+  alert('To generate a post now, run:\n\n/opt/homebrew/bin/python3.12 -m tools.blog_gen\n\nfrom the openclaw_lite directory on the Mac Mini.');
+}
+
+// Load on startup
+refreshData();
+</script>
+</body>
+</html>
