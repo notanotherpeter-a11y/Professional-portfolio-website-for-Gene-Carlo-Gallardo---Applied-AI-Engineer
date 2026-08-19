@@ -889,11 +889,11 @@ window.addEventListener('scroll', throttledScrollHandler);
         },
         {
             triggers: ['what do you do', 'services', 'what can you build', 'what do you offer', 'help me with'],
-            answer: "I build custom business systems:\n• ERP / management dashboards\n• CRM + outreach automation\n• Auto quote & pricing software\n• Animated websites (WebGL, Three.js, scroll effects)\n• AI booking bots & chatbots\n• LinkedIn & email outreach automation\n• Full-stack web apps (React + Supabase + Cloudflare)\n\nMy sweet spot: turning messy manual processes — spreadsheets, WhatsApp groups, paper forms — into clean, automated software."
+            answer: "I offer any kind of AI service — if it involves AI, I can build it. Common services:\n• ERP / management dashboards\n• CRM + outreach automation\n• Auto quote & pricing software\n• Animated websites (WebGL, Three.js, scroll effects)\n• AI booking bots & chatbots\n• Custom AI video generation for clients\n• LinkedIn & email outreach automation\n• Full-stack web apps (React + Supabase + Cloudflare)\n• AI content pipelines, image & video generation tools\n\nIf you can describe it, I can build it."
         },
         {
             triggers: ['what have you built', 'projects', 'portfolio', 'work examples', 'show me'],
-            answer: "Recent builds:\n• Manok Manifesto ERP — inventory, POS, payroll for an F&B business\n• Restaurant commissary management system with multi-branch inventory\n• Restaurant ERP with QR ordering + kitchen display system\n• Animated portfolio + landing websites (Three.js, WebGL, scroll effects)\n• Auto quote software — instant pricing calculator for service businesses\n• CRM + outreach dashboard for a 3PL warehousing company (2,800+ prospects)\n• AI tradie booking bot for Australian tradies\n• LinkedIn + email automation system for a logistics client\n• Daily AI-written blog pipeline with SEO/GEO optimisation"
+            answer: "Recent builds:\n• Manok Manifesto ERP — inventory, POS, payroll for an F&B business\n• Restaurant commissary management system with multi-branch inventory\n• Restaurant ERP with QR ordering + kitchen display system\n• Animated portfolio + landing websites (Three.js, WebGL, scroll effects)\n• Custom AI video generation tool for client marketing content\n• Auto quote software — instant pricing calculator for service businesses\n• CRM + outreach dashboard for a 3PL warehousing company (2,800+ prospects)\n• AI tradie booking bot for Australian tradies\n• LinkedIn + email automation system for a logistics client\n• Daily AI-written blog pipeline with SEO/GEO optimisation"
         },
         {
             triggers: ['how much', 'price', 'cost', 'pricing', 'rates', 'charge', 'quote'],
@@ -928,8 +928,8 @@ window.addEventListener('scroll', throttledScrollHandler);
             answer: "Industries I've built for:\n• Food & beverage (ERPs, POS, kitchen display systems)\n• Logistics & warehousing (CRM, outreach automation)\n• Hospitality (booking bots, management systems)\n• Real estate (lead automation)\n• Trades & services (booking bots, auto quote tools)\n• Professional services (portfolios, LinkedIn automation)\n\nIf your business has repetitive manual work, I can automate it."
         },
         {
-            triggers: ['ai', 'artificial intelligence', 'automation', 'chatbot', 'bot'],
-            answer: "AI is the core of what I build. Current specialisations:\n• AI chatbots + booking bots (Claude AI SDK)\n• Automated email + LinkedIn outreach sequences\n• AI-generated content pipelines (daily blog posts, social content)\n• LLM-powered data extraction and lead research\n• Workflow automation (n8n, Cloudflare Workers, Python)\n\nAll built on the latest models — Claude 3.5/3.7, GPT-4, and open-source alternatives."
+            triggers: ['ai', 'artificial intelligence', 'automation', 'chatbot', 'bot', 'video generation', 'generate video', 'ai video'],
+            answer: "AI is the core of what I build — any kind of AI service, custom-built for your business:\n• AI chatbots + booking bots (Claude AI SDK)\n• Custom AI video generation for clients (ads, promos, product videos)\n• AI image generation pipelines\n• Automated email + LinkedIn outreach sequences\n• AI-generated content pipelines (daily blog posts, social content)\n• LLM-powered data extraction and lead research\n• Workflow automation (n8n, Cloudflare Workers, Python)\n\nBuilt on the latest models — Claude, GPT-4, and specialised video/image AI. If it's AI-related, I can build it."
         },
         {
             triggers: ['blog', 'writing', 'posts', 'articles', 'notes'],
