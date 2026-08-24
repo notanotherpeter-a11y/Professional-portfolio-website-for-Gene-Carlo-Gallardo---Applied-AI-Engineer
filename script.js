@@ -249,6 +249,38 @@ const projectData = {
         ]
     },
     
+    project7: {
+        title: "CRM SaaS: AI-Powered Sales & Calling Platform",
+        status: "In Progress",
+        statusClass: "status-active",
+        description: "A full-stack CRM platform built for sales teams, featuring integrated browser-based calling via Twilio, AI-generated insights, and a conversational AI chat panel per contact.",
+
+        problem: "Sales teams lacked a unified tool that combined contact/lead management with built-in voice calling and AI-driven intelligence. Switching between a CRM, a dialler, and separate note-taking tools slowed reps down and caused data loss.",
+
+        solution: "Building a SaaS CRM from the ground up with Twilio Voice browser calling natively embedded, so reps never leave the app. Post-call AI summaries, pre-call talking points, and lead scoring are generated automatically by a local Ollama model — no external AI costs.",
+
+        features: [
+            "Browser-based outbound & inbound calling via Twilio Voice SDK",
+            "Secure server-side token generation (API Key + Secret)",
+            "ActiveCallPanel overlay: mute, hold, hang-up, live timer, call notes",
+            "AI-generated post-call summaries and pre-call talking points",
+            "Lead scoring (0–100 with reasoning) powered by Ollama",
+            "AI chat panel per contact and per lead",
+            "Org-wide call log at /dashboard/calls",
+            "Full RLS multi-tenancy via Supabase"
+        ],
+
+        tech: "Next.js 15 (App Router), TypeScript strict, Tailwind v4, shadcn/ui, Supabase (PostgreSQL + Auth + RLS), Twilio Voice SDK, Ollama (local LLM), Vitest + RTL, Playwright",
+
+        outcome: "Core calling and AI modules complete. Platform in active development with multi-org tenancy, full call history, and graceful degradation when AI/Twilio are unavailable.",
+
+        learnings: [
+            "Browser-based calling requires careful server-side token hygiene — never expose Account SID or Auth Token to the client",
+            "Local LLM (Ollama) eliminates per-call AI costs while keeping data private",
+            "Graceful degradation is non-negotiable — CRM must remain fully usable even when Twilio or AI are down"
+        ]
+    },
+
     project5: {
         title: "Syntyx Labs: AI SaaS Product Studio",
         status: "Active",
