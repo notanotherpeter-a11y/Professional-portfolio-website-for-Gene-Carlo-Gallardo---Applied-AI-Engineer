@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Blog Admin — gene-carlo.com</title>
+  <title>LinkedIn Scheduler — gene-carlo.com</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
@@ -64,6 +64,15 @@
     .page-title { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 0.25rem; }
     .page-subtitle { font-family: 'Geist Mono', monospace; font-size: 0.75rem; color: var(--text-muted); }
 
+    /* Banners */
+    .banner {
+      border-radius: 10px; padding: 0.875rem 1.25rem; margin-bottom: 1.5rem;
+      font-size: 0.875rem; display: flex; align-items: center; gap: 0.75rem;
+    }
+    .banner.warning { background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.3); color: #fcd34d; }
+    .banner.danger  { background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.3); color: #fca5a5; }
+    .banner-icon { font-size: 1.1rem; flex-shrink: 0; }
+
     /* KPI cards */
     .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem; }
     .kpi-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; }
@@ -75,13 +84,29 @@
     .kpi-card.red .kpi-value { color: var(--red); }
     .kpi-card.blue .kpi-value { color: var(--accent); }
 
-    /* Calendar */
+    /* Trigger buttons */
+    .trigger-row { display: flex; gap: 1rem; margin-bottom: 2rem; align-items: flex-start; }
+    .trigger-card {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+      padding: 1.25rem 1.5rem; flex: 1;
+    }
+    .trigger-card-title { font-weight: 600; font-size: 0.9rem; margin-bottom: 0.25rem; }
+    .trigger-card-sub { font-family: 'Geist Mono', monospace; font-size: 0.7rem; color: var(--text-muted); margin-bottom: 1rem; }
+    .trigger-response {
+      margin-top: 0.75rem; font-family: 'Geist Mono', monospace; font-size: 0.7rem;
+      color: var(--text-muted); background: var(--bg-elevated); border-radius: 6px;
+      padding: 0.6rem 0.75rem; min-height: 2rem; display: none; white-space: pre-wrap; word-break: break-all;
+    }
+    .trigger-response.visible { display: block; }
+
+    /* Buttons */
     .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
     .section-title { font-size: 1rem; font-weight: 700; }
-    .btn { font-family: 'Geist Mono', monospace; font-size: 0.75rem; padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-elevated); color: var(--text); cursor: pointer; text-transform: uppercase; letter-spacing: 0.05em; transition: all 0.15s; text-decoration: none; }
+    .btn { font-family: 'Geist Mono', monospace; font-size: 0.75rem; padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-elevated); color: var(--text); cursor: pointer; text-transform: uppercase; letter-spacing: 0.05em; transition: all 0.15s; text-decoration: none; display: inline-block; }
     .btn:hover { border-color: var(--accent); color: var(--accent); }
     .btn-primary { background: var(--accent); border-color: var(--accent); color: white; }
     .btn-primary:hover { opacity: 0.85; color: white; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
     /* Calendar grid */
     .calendar { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 2rem; }
@@ -108,19 +133,13 @@
     td { padding: 0.875rem 1rem; border-bottom: 1px solid var(--border); font-size: 0.875rem; vertical-align: middle; }
     tr:last-child td { border-bottom: none; }
     tr:hover td { background: rgba(255,255,255,0.02); }
-    .post-title-cell { font-weight: 600; max-width: 280px; }
-    .post-title-link { color: var(--text); text-decoration: none; }
-    .post-title-link:hover { color: var(--accent); }
-    .post-excerpt-small { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 260px; }
     .badge { display: inline-flex; align-items: center; gap: 0.3rem; font-family: 'Geist Mono', monospace; font-size: 0.65rem; padding: 0.2rem 0.6rem; border-radius: 4px; font-weight: 500; }
-    .badge.published { background: rgba(34,197,94,0.15); color: #86efac; }
+    .badge.posted   { background: rgba(34,197,94,0.15); color: #86efac; }
     .badge.scheduled { background: rgba(245,158,11,0.15); color: #fcd34d; }
-    .badge.failed { background: rgba(239,68,68,0.15); color: #fca5a5; }
-    .badge.draft { background: rgba(100,116,139,0.2); color: var(--text-muted); }
-    .category-badge { font-size: 0.7rem; color: var(--text-muted); }
+    .badge.failed   { background: rgba(239,68,68,0.15); color: #fca5a5; }
     .date-cell { font-family: 'Geist Mono', monospace; font-size: 0.75rem; color: var(--text-muted); white-space: nowrap; }
-    .action-link { font-family: 'Geist Mono', monospace; font-size: 0.7rem; color: var(--accent); text-decoration: none; }
-    .action-link:hover { opacity: 0.7; }
+    .slot-badge { font-family: 'Geist Mono', monospace; font-size: 0.65rem; padding: 0.15rem 0.5rem; border-radius: 4px; background: rgba(168,85,247,0.15); color: #d8b4fe; }
+    .img-check { color: var(--green); }
 
     /* Loading */
     .loading { text-align: center; padding: 3rem; color: var(--text-muted); font-family: 'Geist Mono', monospace; font-size: 0.8rem; }
@@ -134,14 +153,11 @@
   <aside class="sidebar">
     <div class="sidebar-logo">GC / <span>System Admin</span></div>
     <div class="sidebar-section-label">Content</div>
-    <a class="nav-item active" href="blog.html"><span class="nav-icon">📝</span> Blog Posts</a>
+    <a class="nav-item" href="blog.html"><span class="nav-icon">📝</span> Blog Posts</a>
     <div class="sidebar-section-label">Social Scheduling</div>
-    <a class="nav-item" href="linkedin.html"><span class="nav-icon">💼</span> LinkedIn</a>
+    <a class="nav-item active" href="linkedin.html"><span class="nav-icon">💼</span> LinkedIn</a>
     <a class="nav-item" href="facebook.html"><span class="nav-icon">👍</span> Facebook</a>
     <a class="nav-item" href="instagram.html"><span class="nav-icon">📷</span> Instagram</a>
-    <div class="sidebar-section-label">Quick Actions</div>
-    <a class="nav-item" href="#" onclick="triggerGenerate()"><span class="nav-icon">⚡</span> Generate Now</a>
-    <a class="nav-item" href="#" onclick="refreshData()"><span class="nav-icon">🔄</span> Refresh Data</a>
     <div class="sidebar-bottom">
       <a href="../index.html">← Back to site</a>
       <a href="https://gene-carlo.com" target="_blank">gene-carlo.com ↗</a>
@@ -151,15 +167,18 @@
   <!-- Main content -->
   <main class="main">
     <div class="page-header">
-      <h1 class="page-title">Blog Dashboard</h1>
-      <p class="page-subtitle">Automated daily posts · gene-carlo.com/blog</p>
+      <h1 class="page-title">LinkedIn Scheduler</h1>
+      <p class="page-subtitle">Automated morning &amp; noon posts · linkedin.com/in/gene-carlo</p>
     </div>
+
+    <!-- Token expiry banner -->
+    <div id="token-banner" style="display:none"></div>
 
     <!-- KPI Cards -->
     <div class="kpi-grid">
       <div class="kpi-card green">
-        <div class="kpi-label">Published</div>
-        <div class="kpi-value" id="kpi-published">—</div>
+        <div class="kpi-label">Posted</div>
+        <div class="kpi-value" id="kpi-posted">—</div>
         <div class="kpi-sub">All time</div>
       </div>
       <div class="kpi-card yellow">
@@ -179,6 +198,22 @@
       </div>
     </div>
 
+    <!-- Manual trigger buttons -->
+    <div class="trigger-row">
+      <div class="trigger-card">
+        <div class="trigger-card-title">Morning Slot</div>
+        <div class="trigger-card-sub">Fires at 9:00 AM</div>
+        <button class="btn btn-primary" onclick="runSlot('morning', this)">▶ Run Morning (9AM)</button>
+        <div class="trigger-response" id="resp-morning"></div>
+      </div>
+      <div class="trigger-card">
+        <div class="trigger-card-title">Noon Slot</div>
+        <div class="trigger-card-sub">Fires at 12:00 PM</div>
+        <button class="btn btn-primary" onclick="runSlot('noon', this)">▶ Run Noon (12PM)</button>
+        <div class="trigger-response" id="resp-noon"></div>
+      </div>
+    </div>
+
     <!-- Calendar -->
     <div class="section-header">
       <h2 class="section-title">Publishing Calendar</h2>
@@ -191,7 +226,7 @@
       <div class="calendar-nav">
         <span class="calendar-month" id="cal-month-label">—</span>
         <span style="font-family:'Geist Mono',monospace;font-size:0.7rem;color:var(--text-muted)">
-          <span class="badge published" style="margin-right:0.5rem">● Published</span>
+          <span class="badge posted" style="margin-right:0.5rem">● Posted</span>
           <span class="badge scheduled">● Scheduled</span>
           <span class="badge failed" style="margin-left:0.5rem">● Failed</span>
         </span>
@@ -203,22 +238,23 @@
     <!-- Posts table -->
     <div class="section-header">
       <h2 class="section-title">All Posts</h2>
-      <a href="https://gene-carlo.com/blog/" class="btn" target="_blank">View Live →</a>
+      <button class="btn" onclick="refreshData()">🔄 Refresh</button>
     </div>
     <div class="posts-table">
       <table>
         <thead>
           <tr>
-            <th>Title</th>
-            <th>Category</th>
+            <th>Num</th>
+            <th>Title / Content</th>
+            <th>Slot</th>
             <th>Status</th>
-            <th>Scheduled</th>
-            <th>Published</th>
-            <th>Actions</th>
+            <th>Scheduled Date</th>
+            <th>Posted At</th>
+            <th>Image</th>
           </tr>
         </thead>
         <tbody id="posts-tbody">
-          <tr><td colspan="6" class="loading"><span class="dot-pulse">Loading posts</span></td></tr>
+          <tr><td colspan="7" class="loading"><span class="dot-pulse">Loading posts</span></td></tr>
         </tbody>
       </table>
     </div>
@@ -228,35 +264,52 @@
 <script>
 const SUPABASE_URL = 'https://iyciembxuanyrsorvlgc.supabase.co';
 const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml5Y2llbWJ4dWFueXJzb3J2bGdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY0Mzc3ODAsImV4cCI6MjEwMjAxMzc4MH0.B6ZJb4UmRNJClh2-mbUd0eeP1ROfnAggzbAycXiFTys';
+const TOKEN_EXPIRY = new Date('2026-10-09T00:00:00');
+const WORKER_URL = 'https://dws-linkedin-scheduler.workers.dev';
 
 let allPosts = [];
 let calYear = new Date().getFullYear();
 let calMonth = new Date().getMonth();
 
+// Token expiry banner
+(function checkTokenExpiry() {
+  const now = new Date();
+  const daysLeft = Math.ceil((TOKEN_EXPIRY - now) / (1000 * 60 * 60 * 24));
+  const banner = document.getElementById('token-banner');
+  if (daysLeft < 3) {
+    banner.className = 'banner danger';
+    banner.innerHTML = `<span class="banner-icon">🔴</span><strong>LinkedIn token expires in ${daysLeft} day${daysLeft !== 1 ? 's' : ''}</strong> — renew immediately or posting will stop on ${TOKEN_EXPIRY.toDateString()}.`;
+    banner.style.display = 'flex';
+  } else if (daysLeft < 14) {
+    banner.className = 'banner warning';
+    banner.innerHTML = `<span class="banner-icon">⚠️</span><strong>LinkedIn token expires in ${daysLeft} days</strong> — renew before ${TOKEN_EXPIRY.toDateString()}.`;
+    banner.style.display = 'flex';
+  }
+})();
+
 async function fetchPosts() {
   const res = await fetch(
-    `${SUPABASE_URL}/rest/v1/blog_posts?select=*&order=created_at.desc&limit=200`,
+    `${SUPABASE_URL}/rest/v1/linkedin_posts?select=*&order=scheduled_date.desc&limit=300`,
     { headers: { 'apikey': ANON_KEY, 'Authorization': `Bearer ${ANON_KEY}` } }
   );
   return await res.json();
 }
 
 function updateKPIs(posts) {
-  const published = posts.filter(p => p.status === 'published').length;
+  const posted    = posts.filter(p => p.status === 'posted').length;
   const scheduled = posts.filter(p => p.status === 'scheduled').length;
-  const failed = posts.filter(p => p.status === 'failed').length;
+  const failed    = posts.filter(p => p.status === 'failed').length;
   const now = new Date();
   const monthPosts = posts.filter(p => {
-    if (!p.published_at) return false;
-    const d = new Date(p.published_at);
-    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+    const d = new Date(p.posted_at || p.scheduled_date || '');
+    return p.status === 'posted' && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
   }).length;
-  document.getElementById('kpi-published').textContent = published;
+  document.getElementById('kpi-posted').textContent    = posted;
   document.getElementById('kpi-scheduled').textContent = scheduled;
-  document.getElementById('kpi-failed').textContent = failed;
-  document.getElementById('kpi-month').textContent = monthPosts;
+  document.getElementById('kpi-failed').textContent    = failed;
+  document.getElementById('kpi-month').textContent     = monthPosts;
   const monthName = now.toLocaleString('default', { month: 'long' });
-  document.getElementById('kpi-month-label').textContent = `Posts in ${monthName}`;
+  document.getElementById('kpi-month-label').textContent = `Posted in ${monthName}`;
 }
 
 function renderCalendar(posts) {
@@ -269,22 +322,20 @@ function renderCalendar(posts) {
 
   const grid = document.getElementById('cal-grid');
   const firstDay = new Date(calYear, calMonth, 1);
-  const lastDay = new Date(calYear, calMonth + 1, 0);
-  let startDow = firstDay.getDay(); // 0=Sun
-  startDow = startDow === 0 ? 6 : startDow - 1; // Mon=0
+  const lastDay  = new Date(calYear, calMonth + 1, 0);
+  let startDow = firstDay.getDay();
+  startDow = startDow === 0 ? 6 : startDow - 1;
 
   const postsByDate = {};
   posts.forEach(p => {
-    const dateStr = (p.published_at || p.scheduled_date || '').substring(0, 10);
+    const dateStr = (p.posted_at || p.scheduled_date || '').substring(0, 10);
     if (!postsByDate[dateStr]) postsByDate[dateStr] = [];
     postsByDate[dateStr].push(p);
   });
 
+  const todayStr = new Date().toISOString().substring(0, 10);
   let cells = '';
-  const today = new Date();
-  const todayStr = today.toISOString().substring(0, 10);
 
-  // Prev month padding
   for (let i = 0; i < startDow; i++) {
     const d = new Date(calYear, calMonth, -startDow + i + 1);
     cells += `<div class="calendar-cell other-month"><div class="day-num">${d.getDate()}</div></div>`;
@@ -294,13 +345,13 @@ function renderCalendar(posts) {
     const dateStr = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
     const isToday = dateStr === todayStr;
     const dayPosts = postsByDate[dateStr] || [];
-    const postsHtml = dayPosts.map(p =>
-      `<div class="cal-post ${p.status}" title="${p.title}" onclick="window.open('https://gene-carlo.com/blog/${p.slug}.html','_blank')">${p.title.substring(0,30)}…</div>`
-    ).join('');
+    const postsHtml = dayPosts.map(p => {
+      const label = (p.title || p.content || '').substring(0, 28);
+      return `<div class="cal-post ${p.status}" title="${(p.content || '').substring(0,120)}">${label}…</div>`;
+    }).join('');
     cells += `<div class="calendar-cell${isToday ? ' today' : ''}"><div class="day-num">${d}</div>${postsHtml}</div>`;
   }
 
-  // Next month padding
   const totalCells = startDow + lastDay.getDate();
   const remaining = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
   for (let i = 1; i <= remaining; i++) {
@@ -313,51 +364,57 @@ function renderCalendar(posts) {
 function renderTable(posts) {
   const tbody = document.getElementById('posts-tbody');
   if (!posts.length) {
-    tbody.innerHTML = '<tr><td colspan="6" class="loading">No posts yet — first post will be generated at 10am today</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" class="loading">No posts found</td></tr>';
     return;
   }
   tbody.innerHTML = posts.map(p => {
-    const schDate = p.scheduled_date || '—';
-    const pubDate = p.published_at ? new Date(p.published_at).toLocaleDateString('en-AU', {day:'numeric',month:'short',year:'numeric'}) : '—';
-    const liveUrl = `https://gene-carlo.com/blog/${p.slug}.html`;
+    const title    = (p.title || p.content || '').substring(0, 80);
+    const schDate  = p.scheduled_date ? p.scheduled_date.substring(0,10) : '—';
+    const postedAt = p.posted_at ? new Date(p.posted_at).toLocaleDateString('en-AU', {day:'numeric',month:'short',year:'numeric'}) : '—';
+    const hasImg   = p.image_url ? `<span class="img-check" title="${p.image_url}">✓</span>` : '<span style="color:var(--text-muted)">—</span>';
+    const slot     = p.post_slot ? `<span class="slot-badge">${p.post_slot}</span>` : '—';
     return `<tr>
-      <td class="post-title-cell">
-        <a href="${liveUrl}" target="_blank" class="post-title-link">${p.title}</a>
-        <div class="post-excerpt-small">${p.excerpt || ''}</div>
-      </td>
-      <td class="category-badge">${p.category || '—'}</td>
+      <td class="date-cell">${p.num ?? '—'}</td>
+      <td style="max-width:300px"><span title="${(p.content||'').substring(0,200)}">${title}${(p.title||p.content||'').length > 80 ? '…' : ''}</span></td>
+      <td>${slot}</td>
       <td><span class="badge ${p.status}">${p.status}</span></td>
       <td class="date-cell">${schDate}</td>
-      <td class="date-cell">${pubDate}</td>
-      <td><a href="${liveUrl}" target="_blank" class="action-link">View →</a></td>
+      <td class="date-cell">${postedAt}</td>
+      <td>${hasImg}</td>
     </tr>`;
   }).join('');
 }
 
 async function refreshData() {
-  document.getElementById('posts-tbody').innerHTML = '<tr><td colspan="6" class="loading"><span class="dot-pulse">Loading</span></td></tr>';
+  document.getElementById('posts-tbody').innerHTML = '<tr><td colspan="7" class="loading"><span class="dot-pulse">Loading</span></td></tr>';
   allPosts = await fetchPosts();
   updateKPIs(allPosts);
   renderCalendar(allPosts);
   renderTable(allPosts);
 }
 
-function prevMonth() {
-  calMonth--;
-  if (calMonth < 0) { calMonth = 11; calYear--; }
-  renderCalendar(allPosts);
-}
-function nextMonth() {
-  calMonth++;
-  if (calMonth > 11) { calMonth = 0; calYear++; }
-  renderCalendar(allPosts);
+function prevMonth() { calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; } renderCalendar(allPosts); }
+function nextMonth() { calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; } renderCalendar(allPosts); }
+
+async function runSlot(slot, btn) {
+  const respEl = document.getElementById(`resp-${slot}`);
+  btn.disabled = true;
+  btn.textContent = '⏳ Running…';
+  respEl.textContent = 'Calling worker…';
+  respEl.classList.add('visible');
+  try {
+    const res = await fetch(`${WORKER_URL}/run?slot=${slot}`);
+    const text = await res.text();
+    respEl.textContent = `HTTP ${res.status} · ${text}`;
+    await refreshData();
+  } catch (err) {
+    respEl.textContent = `Error: ${err.message}`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = slot === 'morning' ? '▶ Run Morning (9AM)' : '▶ Run Noon (12PM)';
+  }
 }
 
-function triggerGenerate() {
-  alert('To generate a post now, run:\n\n/opt/homebrew/bin/python3.12 -m tools.blog_gen\n\nfrom the openclaw_lite directory on the Mac Mini.');
-}
-
-// Load on startup
 refreshData();
 </script>
 </body>

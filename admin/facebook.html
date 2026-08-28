@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Facebook Scheduler — gene-carlo.com</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --bg-card: #111118;
+      --bg-elevated: #16161f;
+      --border: rgba(255,255,255,0.08);
+      --text: #f1f5f9;
+      --text-muted: #64748b;
+      --text-secondary: #94a3b8;
+      --accent: #3b82f6;
+      --green: #22c55e;
+      --yellow: #f59e0b;
+      --red: #ef4444;
+      --purple: #a855f7;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Geist', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    /* Layout */
+    .layout { display: grid; grid-template-columns: 220px 1fr; min-height: 100vh; }
+
+    /* Sidebar */
+    .sidebar {
+      background: var(--bg-card);
+      border-right: 1px solid var(--border);
+      padding: 1.5rem 1rem;
+      position: sticky; top: 0; height: 100vh;
+      display: flex; flex-direction: column; gap: 0.25rem;
+    }
+    .sidebar-logo {
+      font-family: 'Geist Mono', monospace; font-size: 0.7rem;
+      text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-muted);
+      padding: 0 0.5rem 1.5rem; border-bottom: 1px solid var(--border); margin-bottom: 1rem;
+    }
+    .sidebar-logo span { color: var(--accent); }
+    .nav-item {
+      display: flex; align-items: center; gap: 0.75rem; padding: 0.6rem 0.75rem;
+      border-radius: 8px; font-size: 0.875rem; cursor: pointer; color: var(--text-secondary);
+      text-decoration: none; transition: all 0.15s;
+    }
+    .nav-item:hover, .nav-item.active { background: rgba(59,130,246,0.1); color: var(--text); }
+    .nav-item.active { color: var(--accent); }
+    .nav-icon { font-size: 1rem; width: 20px; text-align: center; }
+    .sidebar-section-label {
+      font-family: 'Geist Mono', monospace; font-size: 0.65rem;
+      text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-muted);
+      padding: 1rem 0.75rem 0.25rem;
+    }
+    .sidebar-bottom { margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--border); }
+    .sidebar-bottom a { font-size: 0.8rem; color: var(--text-muted); text-decoration: none; display: block; padding: 0.4rem 0.75rem; }
+    .sidebar-bottom a:hover { color: var(--accent); }
+
+    /* Main */
+    .main { padding: 2rem 2.5rem; overflow-y: auto; }
+    .page-header { margin-bottom: 2rem; }
+    .page-title { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 0.25rem; }
+    .page-subtitle { font-family: 'Geist Mono', monospace; font-size: 0.75rem; color: var(--text-muted); }
+
+    /* KPI cards */
+    .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2rem; }
+    .kpi-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; }
+    .kpi-label { font-family: 'Geist Mono', monospace; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 0.5rem; }
+    .kpi-value { font-size: 2rem; font-weight: 800; letter-spacing: -0.04em; }
+    .kpi-sub { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem; }
+    .kpi-card.green .kpi-value { color: var(--green); }
+    .kpi-card.yellow .kpi-value { color: var(--yellow); }
+    .kpi-card.blue .kpi-value { color: var(--accent); }
+    .chip { font-family: 'Geist Mono', monospace; font-size: 0.7rem; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 6px; padding: 0.2rem 0.5rem; color: var(--text-secondary); }
+
+    /* Buttons */
+    .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+    .section-title { font-size: 1rem; font-weight: 700; }
+    .btn { font-family: 'Geist Mono', monospace; font-size: 0.75rem; padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-elevated); color: var(--text); cursor: pointer; text-transform: uppercase; letter-spacing: 0.05em; transition: all 0.15s; text-decoration: none; display: inline-block; }
+    .btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* Tables */
+    .posts-table { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 2rem; }
+    table { width: 100%; border-collapse: collapse; }
+    th { font-family: 'Geist Mono', monospace; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid var(--border); background: var(--bg-elevated); }
+    td { padding: 0.875rem 1rem; border-bottom: 1px solid var(--border); font-size: 0.875rem; vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,0.02); }
+    .date-cell { font-family: 'Geist Mono', monospace; font-size: 0.75rem; color: var(--text-muted); white-space: nowrap; }
+    .img-check { color: var(--green); }
+    .mono-id { font-family: 'Geist Mono', monospace; font-size: 0.7rem; color: var(--text-muted); }
+
+    /* Note bar */
+    .note-bar {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px;
+      padding: 1rem 1.25rem; font-size: 0.8rem; color: var(--text-muted);
+      font-family: 'Geist Mono', monospace; margin-top: 2rem;
+    }
+    .note-bar strong { color: var(--text-secondary); }
+
+    /* Loading */
+    .loading { text-align: center; padding: 3rem; color: var(--text-muted); font-family: 'Geist Mono', monospace; font-size: 0.8rem; }
+    .dot-pulse::after { content: '...'; animation: dots 1.5s infinite; }
+    @keyframes dots { 0%,20% { content: '.'; } 40%,60% { content: '..'; } 80%,100% { content: '...'; } }
+  </style>
+</head>
+<body>
+<div class="layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">GC / <span>System Admin</span></div>
+    <div class="sidebar-section-label">Content</div>
+    <a class="nav-item" href="blog.html"><span class="nav-icon">📝</span> Blog Posts</a>
+    <div class="sidebar-section-label">Social Scheduling</div>
+    <a class="nav-item" href="linkedin.html"><span class="nav-icon">💼</span> LinkedIn</a>
+    <a class="nav-item active" href="facebook.html"><span class="nav-icon">👍</span> Facebook</a>
+    <a class="nav-item" href="instagram.html"><span class="nav-icon">📷</span> Instagram</a>
+    <div class="sidebar-bottom">
+      <a href="../index.html">← Back to site</a>
+      <a href="https://gene-carlo.com" target="_blank">gene-carlo.com ↗</a>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <main class="main">
+    <div class="page-header">
+      <h1 class="page-title">Facebook Scheduler</h1>
+      <p class="page-subtitle">Waffle the Bernedoodle · waffle.the.bernedoodle</p>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="kpi-grid">
+      <div class="kpi-card yellow">
+        <div class="kpi-label">Scheduled Posts</div>
+        <div class="kpi-value" id="kpi-scheduled">—</div>
+        <div class="kpi-sub">Upcoming</div>
+      </div>
+      <div class="kpi-card green">
+        <div class="kpi-label">Recent Posts</div>
+        <div class="kpi-value" id="kpi-recent">—</div>
+        <div class="kpi-sub" id="kpi-recent-label">This month</div>
+      </div>
+      <div class="kpi-card blue">
+        <div class="kpi-label">Page ID</div>
+        <div class="kpi-value" style="font-size:1rem;padding-top:0.4rem"><span class="chip" id="kpi-page-id">1107929132411629</span></div>
+        <div class="kpi-sub">Token: non-expiring</div>
+      </div>
+    </div>
+
+    <!-- Scheduled Posts -->
+    <div class="section-header">
+      <h2 class="section-title">Scheduled Posts</h2>
+      <button class="btn" onclick="refreshData()">🔄 Refresh</button>
+    </div>
+    <div class="posts-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Message</th>
+            <th>Has Image</th>
+            <th>Scheduled Time (AEST)</th>
+            <th>FB Post ID</th>
+          </tr>
+        </thead>
+        <tbody id="scheduled-tbody">
+          <tr><td colspan="4" class="loading"><span class="dot-pulse">Loading</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Recent Published -->
+    <div class="section-header">
+      <h2 class="section-title">Recent Published Posts</h2>
+    </div>
+    <div class="posts-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Message</th>
+            <th>Has Image</th>
+            <th>Published Time (AEST)</th>
+            <th>FB Post ID</th>
+          </tr>
+        </thead>
+        <tbody id="recent-tbody">
+          <tr><td colspan="4" class="loading"><span class="dot-pulse">Loading</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note-bar">
+      <strong>Token:</strong> non-expiring · <strong>Page:</strong> Waffle the Bernedoodle · <strong>Handle:</strong> waffle.the.bernedoodle · <strong>Page ID:</strong> 1107929132411629
+    </div>
+  </main>
+</div>
+
+<script>
+const PAGE_ID   = '1107929132411629';
+const USER_TOKEN = 'EAAVibaUIE1ABSOmHorSJYL0Ivk8e28x4gDi3z7eLkLJts1Jiru16KL0bleOElPiNgYPTaejB1PuybSLjCDI8LIZApi2sloUA2evt5aLd1ntwNX5d1fBYHZCw2boVApBU3xfG7WHONcGC4ysonFgw9eS9noeXq418LV0c2ZAOjWBh9kgANZCTiD4Ojjd8k7QY';
+
+let pageToken = null;
+
+function toAEST(timestamp) {
+  return new Date(timestamp * 1000).toLocaleString('en-AU', { timeZone: 'Australia/Melbourne', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
+
+function toAESTFromISO(isoStr) {
+  return new Date(isoStr).toLocaleString('en-AU', { timeZone: 'Australia/Melbourne', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
+
+async function getPageToken() {
+  const res = await fetch(`https://graph.facebook.com/v22.0/${PAGE_ID}?fields=access_token&access_token=${USER_TOKEN}`);
+  const data = await res.json();
+  if (data.access_token) {
+    pageToken = data.access_token;
+  } else {
+    console.warn('Could not get page token, falling back to user token', data);
+    pageToken = USER_TOKEN;
+  }
+}
+
+async function fetchScheduled() {
+  const res = await fetch(`https://graph.facebook.com/v22.0/${PAGE_ID}/scheduled_posts?fields=id,message,scheduled_publish_time,full_picture&access_token=${pageToken}&limit=50`);
+  return await res.json();
+}
+
+async function fetchRecent() {
+  const res = await fetch(`https://graph.facebook.com/v22.0/${PAGE_ID}/feed?fields=id,message,created_time,full_picture&access_token=${pageToken}&limit=10`);
+  return await res.json();
+}
+
+function renderScheduled(posts) {
+  const tbody = document.getElementById('scheduled-tbody');
+  if (!posts || !posts.length) {
+    tbody.innerHTML = '<tr><td colspan="4" class="loading">No scheduled posts</td></tr>';
+    document.getElementById('kpi-scheduled').textContent = '0';
+    return;
+  }
+  document.getElementById('kpi-scheduled').textContent = posts.length;
+  tbody.innerHTML = posts.map(p => {
+    const msg   = (p.message || '').substring(0, 100) + ((p.message || '').length > 100 ? '…' : '');
+    const hasImg = p.full_picture ? `<span class="img-check">✓</span>` : '<span style="color:var(--text-muted)">—</span>';
+    const time  = p.scheduled_publish_time ? toAEST(p.scheduled_publish_time) : '—';
+    return `<tr>
+      <td style="max-width:320px" title="${(p.message||'').replace(/"/g,"'")}">${msg}</td>
+      <td>${hasImg}</td>
+      <td class="date-cell">${time}</td>
+      <td class="mono-id">${p.id}</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderRecent(posts) {
+  const tbody = document.getElementById('recent-tbody');
+  if (!posts || !posts.length) {
+    tbody.innerHTML = '<tr><td colspan="4" class="loading">No recent posts</td></tr>';
+    document.getElementById('kpi-recent').textContent = '0';
+    return;
+  }
+  // Count posts this month
+  const now = new Date();
+  const monthCount = posts.filter(p => {
+    const d = new Date(p.created_time);
+    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+  }).length;
+  document.getElementById('kpi-recent').textContent = monthCount;
+  document.getElementById('kpi-recent-label').textContent = `In ${now.toLocaleString('default',{month:'long'})}`;
+
+  tbody.innerHTML = posts.map(p => {
+    const msg    = (p.message || '').substring(0, 100) + ((p.message || '').length > 100 ? '…' : '');
+    const hasImg = p.full_picture ? `<span class="img-check">✓</span>` : '<span style="color:var(--text-muted)">—</span>';
+    const time   = p.created_time ? toAESTFromISO(p.created_time) : '—';
+    return `<tr>
+      <td style="max-width:320px" title="${(p.message||'').replace(/"/g,"'")}">${msg}</td>
+      <td>${hasImg}</td>
+      <td class="date-cell">${time}</td>
+      <td class="mono-id">${p.id}</td>
+    </tr>`;
+  }).join('');
+}
+
+async function refreshData() {
+  document.getElementById('scheduled-tbody').innerHTML = '<tr><td colspan="4" class="loading"><span class="dot-pulse">Loading</span></td></tr>';
+  document.getElementById('recent-tbody').innerHTML    = '<tr><td colspan="4" class="loading"><span class="dot-pulse">Loading</span></td></tr>';
+  try {
+    await getPageToken();
+    const [scheduledData, recentData] = await Promise.all([fetchScheduled(), fetchRecent()]);
+    renderScheduled(scheduledData.data || []);
+    renderRecent(recentData.data || []);
+  } catch (err) {
+    const errMsg = `<tr><td colspan="4" class="loading">Error: ${err.message}</td></tr>`;
+    document.getElementById('scheduled-tbody').innerHTML = errMsg;
+    document.getElementById('recent-tbody').innerHTML    = errMsg;
+  }
+}
+
+refreshData();
+</script>
+</body>
+</html>

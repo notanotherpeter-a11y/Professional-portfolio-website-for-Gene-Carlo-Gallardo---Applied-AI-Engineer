@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Instagram Scheduler — gene-carlo.com</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --bg-card: #111118;
+      --bg-elevated: #16161f;
+      --border: rgba(255,255,255,0.08);
+      --text: #f1f5f9;
+      --text-muted: #64748b;
+      --text-secondary: #94a3b8;
+      --accent: #3b82f6;
+      --green: #22c55e;
+      --yellow: #f59e0b;
+      --red: #ef4444;
+      --purple: #a855f7;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Geist', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    /* Layout */
+    .layout { display: grid; grid-template-columns: 220px 1fr; min-height: 100vh; }
+
+    /* Sidebar */
+    .sidebar {
+      background: var(--bg-card);
+      border-right: 1px solid var(--border);
+      padding: 1.5rem 1rem;
+      position: sticky; top: 0; height: 100vh;
+      display: flex; flex-direction: column; gap: 0.25rem;
+    }
+    .sidebar-logo {
+      font-family: 'Geist Mono', monospace; font-size: 0.7rem;
+      text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-muted);
+      padding: 0 0.5rem 1.5rem; border-bottom: 1px solid var(--border); margin-bottom: 1rem;
+    }
+    .sidebar-logo span { color: var(--accent); }
+    .nav-item {
+      display: flex; align-items: center; gap: 0.75rem; padding: 0.6rem 0.75rem;
+      border-radius: 8px; font-size: 0.875rem; cursor: pointer; color: var(--text-secondary);
+      text-decoration: none; transition: all 0.15s;
+    }
+    .nav-item:hover, .nav-item.active { background: rgba(59,130,246,0.1); color: var(--text); }
+    .nav-item.active { color: var(--accent); }
+    .nav-icon { font-size: 1rem; width: 20px; text-align: center; }
+    .sidebar-section-label {
+      font-family: 'Geist Mono', monospace; font-size: 0.65rem;
+      text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-muted);
+      padding: 1rem 0.75rem 0.25rem;
+    }
+    .sidebar-bottom { margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--border); }
+    .sidebar-bottom a { font-size: 0.8rem; color: var(--text-muted); text-decoration: none; display: block; padding: 0.4rem 0.75rem; }
+    .sidebar-bottom a:hover { color: var(--accent); }
+
+    /* Main */
+    .main { padding: 2rem 2.5rem; overflow-y: auto; }
+    .page-header { margin-bottom: 2rem; }
+    .page-title { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 0.25rem; }
+    .page-subtitle { font-family: 'Geist Mono', monospace; font-size: 0.75rem; color: var(--text-muted); }
+
+    /* Banners */
+    .banner {
+      border-radius: 10px; padding: 0.875rem 1.25rem; margin-bottom: 1.5rem;
+      font-size: 0.875rem; display: flex; align-items: center; gap: 0.75rem;
+    }
+    .banner.danger { background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.3); color: #fca5a5; }
+
+    /* Section header */
+    .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+    .section-title { font-size: 1rem; font-weight: 700; }
+
+    /* LaunchAgent cards */
+    .agent-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2rem; }
+    .agent-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; }
+    .agent-name { font-weight: 700; font-size: 0.95rem; margin-bottom: 0.5rem; }
+    .agent-row { display: flex; flex-direction: column; gap: 0.35rem; margin-top: 0.75rem; }
+    .agent-field { font-family: 'Geist Mono', monospace; font-size: 0.68rem; color: var(--text-muted); }
+    .agent-field strong { color: var(--text-secondary); }
+    .agent-time { font-family: 'Geist Mono', monospace; font-size: 1.1rem; font-weight: 700; color: var(--accent); margin-bottom: 0.25rem; }
+    .badge { display: inline-flex; align-items: center; gap: 0.3rem; font-family: 'Geist Mono', monospace; font-size: 0.65rem; padding: 0.2rem 0.6rem; border-radius: 4px; font-weight: 500; }
+    .badge.active  { background: rgba(34,197,94,0.15); color: #86efac; }
+    .badge.posted  { background: rgba(34,197,94,0.15); color: #86efac; }
+    .badge.scheduled { background: rgba(245,158,11,0.15); color: #fcd34d; }
+
+    /* Posts table */
+    .posts-table { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 2rem; }
+    table { width: 100%; border-collapse: collapse; }
+    th { font-family: 'Geist Mono', monospace; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid var(--border); background: var(--bg-elevated); }
+    td { padding: 0.875rem 1rem; border-bottom: 1px solid var(--border); font-size: 0.875rem; vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,0.02); }
+    .date-cell { font-family: 'Geist Mono', monospace; font-size: 0.75rem; color: var(--text-muted); white-space: nowrap; }
+
+    /* Account info card */
+    .account-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; display: flex; gap: 2.5rem; flex-wrap: wrap; }
+    .account-field { display: flex; flex-direction: column; gap: 0.25rem; }
+    .account-label { font-family: 'Geist Mono', monospace; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); }
+    .account-value { font-size: 0.95rem; font-weight: 600; }
+
+    /* Notes */
+    .notes-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem 1.5rem; }
+    .notes-title { font-weight: 700; font-size: 0.9rem; margin-bottom: 0.75rem; }
+    .notes-list { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+    .notes-list li { font-size: 0.85rem; color: var(--text-secondary); padding-left: 1rem; position: relative; }
+    .notes-list li::before { content: '→'; position: absolute; left: 0; color: var(--text-muted); }
+    .code { font-family: 'Geist Mono', monospace; font-size: 0.75rem; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 4px; padding: 0.15rem 0.4rem; color: var(--text); }
+  </style>
+</head>
+<body>
+<div class="layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">GC / <span>System Admin</span></div>
+    <div class="sidebar-section-label">Content</div>
+    <a class="nav-item" href="blog.html"><span class="nav-icon">📝</span> Blog Posts</a>
+    <div class="sidebar-section-label">Social Scheduling</div>
+    <a class="nav-item" href="linkedin.html"><span class="nav-icon">💼</span> LinkedIn</a>
+    <a class="nav-item" href="facebook.html"><span class="nav-icon">👍</span> Facebook</a>
+    <a class="nav-item active" href="instagram.html"><span class="nav-icon">📷</span> Instagram</a>
+    <div class="sidebar-bottom">
+      <a href="../index.html">← Back to site</a>
+      <a href="https://gene-carlo.com" target="_blank">gene-carlo.com ↗</a>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <main class="main">
+    <div class="page-header">
+      <h1 class="page-title">Instagram Scheduler</h1>
+      <p class="page-subtitle">@waffle.the.bernedoodle · Mac LaunchAgent based</p>
+    </div>
+
+    <!-- Token expiry warning -->
+    <div class="banner danger">
+      <span style="font-size:1.1rem;flex-shrink:0">🔴</span>
+      <span><strong>Instagram token expires 2026-09-09</strong> — only 12 days away. Refresh now or posting will stop.</span>
+    </div>
+
+    <!-- LaunchAgent status -->
+    <div class="section-header">
+      <h2 class="section-title">LaunchAgent Status</h2>
+    </div>
+    <div class="agent-grid">
+      <div class="agent-card">
+        <div class="agent-time">8:00 AM</div>
+        <div class="agent-name">Quote Cards</div>
+        <span class="badge active">● Active</span>
+        <div class="agent-row">
+          <div class="agent-field"><strong>Script:</strong> /tmp/dispatch_quote_ig.py</div>
+          <div class="agent-field"><strong>Log:</strong> /tmp/quote_ig_cron.log</div>
+          <div class="agent-field"><strong>Schedule:</strong> Daily</div>
+        </div>
+      </div>
+      <div class="agent-card">
+        <div class="agent-time">9:55 AM</div>
+        <div class="agent-name">Photo Posts</div>
+        <span class="badge active">● Active</span>
+        <div class="agent-row">
+          <div class="agent-field"><strong>Script:</strong> /tmp/dispatch_photo_ig.py</div>
+          <div class="agent-field"><strong>Log:</strong> /tmp/photo_ig_cron.log</div>
+          <div class="agent-field"><strong>Schedule:</strong> Daily</div>
+        </div>
+      </div>
+      <div class="agent-card">
+        <div class="agent-time">3:00 PM</div>
+        <div class="agent-name">Funny Cards</div>
+        <span class="badge active">● Active</span>
+        <div class="agent-row">
+          <div class="agent-field"><strong>Script:</strong> /tmp/dispatch_funny_ig.py</div>
+          <div class="agent-field"><strong>Log:</strong> /tmp/funny_ig_cron.log</div>
+          <div class="agent-field"><strong>Schedule:</strong> Daily</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Photo schedule table -->
+    <div class="section-header">
+      <h2 class="section-title">Upcoming Photo Schedule</h2>
+    </div>
+    <div class="posts-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Photo #</th>
+            <th>Filename</th>
+            <th>Scheduled Date</th>
+            <th>Time</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="photo-tbody"></tbody>
+      </table>
+    </div>
+
+    <!-- Account info -->
+    <div class="section-header">
+      <h2 class="section-title">IG Account</h2>
+    </div>
+    <div class="account-card">
+      <div class="account-field">
+        <div class="account-label">Handle</div>
+        <div class="account-value">@waffle.the.bernedoodle</div>
+      </div>
+      <div class="account-field">
+        <div class="account-label">IG User ID</div>
+        <div class="account-value" style="font-family:'Geist Mono',monospace;font-size:0.85rem">37524223630501993</div>
+      </div>
+      <div class="account-field">
+        <div class="account-label">Token Expiry</div>
+        <div class="account-value" style="color:var(--red)">2026-09-09 🔴</div>
+      </div>
+      <div class="account-field">
+        <div class="account-label">Scheduler Type</div>
+        <div class="account-value">macOS LaunchAgent</div>
+      </div>
+    </div>
+
+    <!-- Important notes -->
+    <div class="section-header">
+      <h2 class="section-title">Important Notes</h2>
+    </div>
+    <div class="notes-card">
+      <ul class="notes-list">
+        <li>Mac must be <strong>ON and logged in</strong> for LaunchAgents to fire — they do not run when the Mac is asleep or off.</li>
+        <li>Instagram's API does not support scheduling future posts — all posts go live immediately when the script runs.</li>
+        <li>You <strong>cannot delete posts</strong> via the Basic Display API; use the Instagram app or Creator Studio to remove posts.</li>
+        <li>To refresh the token, run: <span class="code">python3 /tmp/refresh_ig_token.py</span> then update the token in your .env file.</li>
+        <li>Photo source folder: <span class="code">/Users/king/Downloads/waffles photo/</span></li>
+        <li>All logs are in <span class="code">/tmp/</span> — check them if a post fails to go through.</li>
+      </ul>
+    </div>
+  </main>
+</div>
+
+<script>
+// Today is Aug 28, 2026 — photos scheduled Jul 14–Aug 31
+// Photos 6–19: Jul 14–27 @ 9:55 AM
+// Photos 20–23: Jul 28–31 @ 9:55 AM
+// Since today is Aug 28 2026, all Jul and most Aug dates are past → "posted"
+
+const TODAY = new Date('2026-08-28');
+
+function makeDate(year, month, day) {
+  // month is 1-based
+  return new Date(year, month - 1, day);
+}
+
+const photos = [];
+
+// Photos 6–19: Jul 14–27
+for (let i = 0; i < 14; i++) {
+  const photoNum = 6 + i;
+  const day = 14 + i;
+  photos.push({ num: photoNum, filename: `Photo ${photoNum}.JPEG`, date: makeDate(2026, 7, day) });
+}
+
+// Photos 20–23: Jul 28–31
+for (let i = 0; i < 4; i++) {
+  const photoNum = 20 + i;
+  const day = 28 + i;
+  photos.push({ num: photoNum, filename: `Photo ${photoNum}.JPEG`, date: makeDate(2026, 7, day) });
+}
+
+function renderPhotos() {
+  const tbody = document.getElementById('photo-tbody');
+  tbody.innerHTML = photos.map(p => {
+    const isPast = p.date < TODAY;
+    const status = isPast ? '<span class="badge posted">● Posted</span>' : '<span class="badge scheduled">● Scheduled</span>';
+    const dateStr = p.date.toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' });
+    return `<tr>
+      <td class="date-cell">${p.num}</td>
+      <td>${p.filename}</td>
+      <td class="date-cell">${dateStr}</td>
+      <td class="date-cell">9:55 AM</td>
+      <td>${status}</td>
+    </tr>`;
+  }).join('');
+}
+
+renderPhotos();
+</script>
+</body>
+</html>
